@@ -1,6 +1,7 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany, JoinColumn, CreateDateColumn, UpdateDateColumn } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, ManyToMany, JoinTable, OneToMany, JoinColumn, CreateDateColumn, UpdateDateColumn } from 'typeorm';
 import { CartItem } from './cart-item.entity';
 import { OrderItem } from './order-item.entity';
+import { VehicleModel } from './vehicle-model.entity';
 
 @Entity('products')
 export class Product {
@@ -91,6 +92,22 @@ export class Product {
 
   @Column({ nullable: true })
   brandId: number;
+
+  @ManyToOne(() => VehicleModel, { nullable: true, eager: false })
+  @JoinColumn({ name: 'vehicleModelId' })
+  vehicleModel?: VehicleModel;
+
+  @Column({ nullable: true })
+  vehicleModelId?: number | null;
+
+  /** Additional fitments beyond the primary `vehicleModelId` (kept in sync: first id = primary). */
+  @ManyToMany(() => VehicleModel, (vm) => vm.products, { eager: false })
+  @JoinTable({
+    name: 'product_vehicle_models',
+    joinColumn: { name: 'productId', referencedColumnName: 'id' },
+    inverseJoinColumn: { name: 'vehicleModelId', referencedColumnName: 'id' },
+  })
+  vehicleModels?: VehicleModel[];
 
   @OneToMany(() => CartItem, cartItem => cartItem.product)
   cartItems: CartItem[];

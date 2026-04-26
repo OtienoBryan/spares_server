@@ -1,6 +1,6 @@
 import { TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { ConfigService } from '@nestjs/config';
-import { Category, Product, User, Cart, CartItem, Order, OrderItem, Rider, SubCategory, Brand, Blog } from '../entities';
+import { Category, Product, User, Cart, CartItem, Order, OrderItem, Rider, SubCategory, Brand, Blog, VehicleModel } from '../entities';
 import { Staff } from '../entities/staff.entity';
 
 export const getDatabaseConfig = (configService: ConfigService): TypeOrmModuleOptions => ({
@@ -10,7 +10,7 @@ export const getDatabaseConfig = (configService: ConfigService): TypeOrmModuleOp
   username: configService.get<string>('DB_USERNAME'),
   password: configService.get<string>('DB_PASSWORD'),
   database: configService.get<string>('DB_DATABASE'),
-  entities: [Category, Product, User, Cart, CartItem, Order, OrderItem, Rider, SubCategory, Brand, Staff, Blog],
+  entities: [Category, Product, User, Cart, CartItem, Order, OrderItem, Rider, SubCategory, Brand, Staff, Blog, VehicleModel],
   synchronize: false, // Disabled to avoid schema conflicts
   logging: configService.get<string>('NODE_ENV') === 'development',
   migrations: [__dirname + '/../migrations/*{.ts,.js}'],

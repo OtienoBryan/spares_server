@@ -58,6 +58,7 @@ const brand_entity_1 = require("../entities/brand.entity");
 const subcategory_entity_1 = require("../entities/subcategory.entity");
 const staff_entity_1 = require("../entities/staff.entity");
 const blog_entity_1 = require("../entities/blog.entity");
+const vehicle_model_entity_1 = require("../entities/vehicle-model.entity");
 let AdminService = class AdminService {
     productRepository;
     categoryRepository;
@@ -67,7 +68,8 @@ let AdminService = class AdminService {
     subCategoryRepository;
     staffRepository;
     blogRepository;
-    constructor(productRepository, categoryRepository, orderRepository, userRepository, brandRepository, subCategoryRepository, staffRepository, blogRepository) {
+    vehicleModelRepository;
+    constructor(productRepository, categoryRepository, orderRepository, userRepository, brandRepository, subCategoryRepository, staffRepository, blogRepository, vehicleModelRepository) {
         this.productRepository = productRepository;
         this.categoryRepository = categoryRepository;
         this.orderRepository = orderRepository;
@@ -76,6 +78,7 @@ let AdminService = class AdminService {
         this.subCategoryRepository = subCategoryRepository;
         this.staffRepository = staffRepository;
         this.blogRepository = blogRepository;
+        this.vehicleModelRepository = vehicleModelRepository;
     }
     async getDashboardStats() {
         const [totalProducts, totalCategories, totalOrders, totalUsers, recentOrders] = await Promise.all([
@@ -114,7 +117,7 @@ let AdminService = class AdminService {
     }
     async getAllProducts() {
         const products = await this.productRepository.find({
-            relations: ['category', 'brandEntity', 'subcategory'],
+            relations: ['category', 'brandEntity', 'subcategory', 'vehicleModel', 'vehicleModels'],
             order: { createdAt: 'DESC' },
         });
         console.log('[getAllProducts] Total products:', products.length);
@@ -156,7 +159,7 @@ let AdminService = class AdminService {
     async getProductById(id) {
         const product = await this.productRepository.findOne({
             where: { id },
-            relations: ['category', 'brandEntity', 'subcategory'],
+            relations: ['category', 'brandEntity', 'subcategory', 'vehicleModel', 'vehicleModels'],
         });
         if (!product)
             return null;
@@ -233,10 +236,23 @@ let AdminService = class AdminService {
         else {
             productData.subcategoryId = null;
         }
+        const vehicleModelIds = this.resolveVehicleModelIdsForCreate(productData);
+        delete productData.vehicleModelIds;
+        delete productData.vehicleModels;
+        productData.vehicleModelId = vehicleModelIds[0] ?? null;
         const product = this.productRepository.create(productData);
-        return this.productRepository.save(product);
+        const saveResult = await this.productRepository.save(product);
+        const saved = Array.isArray(saveResult) ? saveResult[0] : saveResult;
+        await this.applyVehicleModelsToProduct(saved, vehicleModelIds);
+        return this.getProductById(saved.id);
     }
     async updateProduct(id, productData) {
+        const resolvedVehicleIds = this.resolveVehicleModelIdsForUpdate(productData);
+        delete productData.vehicleModelIds;
+        delete productData.vehicleModels;
+        if (resolvedVehicleIds !== undefined) {
+            delete productData.vehicleModelId;
+        }
         console.log('🔧 [AdminService] updateProduct called with:');
         console.log('  ID:', id);
         console.log('  Product Data:', JSON.stringify(productData, null, 2));
@@ -315,11 +331,12 @@ let AdminService = class AdminService {
         console.log('    brandId:', productData.brandId);
         console.log('    brand:', productData.brand);
         console.log('    subcategoryId:', productData.subcategoryId);
+        console.log('    vehicleModelId:', productData.vehicleModelId, 'resolvedVehicleIds:', resolvedVehicleIds);
         console.log('    skus:', productData.skus);
         console.log('    Full data:', JSON.stringify(productData, null, 2));
         const existingProduct = await this.productRepository.findOne({
             where: { id },
-            relations: ['category', 'brandEntity', 'subcategory']
+            relations: ['category', 'brandEntity', 'subcategory', 'vehicleModels'],
         });
         if (!existingProduct) {
             throw new Error(`Product with ID ${id} not found`);
@@ -352,6 +369,9 @@ let AdminService = class AdminService {
         }
         if (productData.requiresAgeVerification !== undefined) {
             mergedProduct.requiresAgeVerification = !!productData.requiresAgeVerification;
+        }
+        if (resolvedVehicleIds !== undefined) {
+            await this.applyVehicleModelsToProduct(mergedProduct, resolvedVehicleIds);
         }
         console.log('  Final merged product before save:', {
             id: mergedProduct.id,
@@ -529,6 +549,66 @@ let AdminService = class AdminService {
     async deleteBlog(id) {
         return this.blogRepository.delete(id);
     }
+    normalizeVehicleModelIdArray(value) {
+        if (!Array.isArray(value))
+            return [];
+        const nums = value
+            .map((v) => parseInt(String(v), 10))
+            .filter((n) => !Number.isNaN(n) && n > 0);
+        return [...new Set(nums)];
+    }
+    resolveVehicleModelIdsForCreate(productData) {
+        if (Object.prototype.hasOwnProperty.call(productData, 'vehicleModelIds')) {
+            return this.normalizeVehicleModelIdArray(productData.vehicleModelIds);
+        }
+        const v = productData.vehicleModelId;
+        if (v === undefined || v === null || v === '')
+            return [];
+        const n = typeof v === 'string' ? parseInt(v, 10) : Number(v);
+        return !Number.isNaN(n) && n > 0 ? [n] : [];
+    }
+    resolveVehicleModelIdsForUpdate(productData) {
+        if (Object.prototype.hasOwnProperty.call(productData, 'vehicleModelIds')) {
+            return this.normalizeVehicleModelIdArray(productData.vehicleModelIds);
+        }
+        if (Object.prototype.hasOwnProperty.call(productData, 'vehicleModelId')) {
+            const v = productData.vehicleModelId;
+            if (v === null || v === '')
+                return [];
+            const n = typeof v === 'string' ? parseInt(v, 10) : Number(v);
+            return !Number.isNaN(n) && n > 0 ? [n] : [];
+        }
+        return undefined;
+    }
+    async applyVehicleModelsToProduct(product, orderedIds) {
+        if (orderedIds.length === 0) {
+            product.vehicleModels = [];
+            product.vehicleModelId = null;
+            return;
+        }
+        const models = await this.vehicleModelRepository.findBy({ id: (0, typeorm_2.In)(orderedIds) });
+        const orderMap = new Map(orderedIds.map((mid, i) => [mid, i]));
+        models.sort((a, b) => (orderMap.get(a.id) ?? 0) - (orderMap.get(b.id) ?? 0));
+        product.vehicleModels = models;
+        product.vehicleModelId = models[0]?.id;
+    }
+    async getAllVehicleModels() {
+        return this.vehicleModelRepository.find({ order: { name: 'ASC' } });
+    }
+    async createVehicleModel(data) {
+        const model = this.vehicleModelRepository.create({ name: data?.name?.trim() });
+        return this.vehicleModelRepository.save(model);
+    }
+    async updateVehicleModel(id, data) {
+        const payload = {};
+        if (typeof data?.name === 'string')
+            payload.name = data.name.trim();
+        await this.vehicleModelRepository.update(id, payload);
+        return this.vehicleModelRepository.findOne({ where: { id } });
+    }
+    async deleteVehicleModel(id) {
+        return this.vehicleModelRepository.delete(id);
+    }
 };
 exports.AdminService = AdminService;
 exports.AdminService = AdminService = __decorate([
@@ -541,7 +621,9 @@ exports.AdminService = AdminService = __decorate([
     __param(5, (0, typeorm_1.InjectRepository)(subcategory_entity_1.SubCategory)),
     __param(6, (0, typeorm_1.InjectRepository)(staff_entity_1.Staff)),
     __param(7, (0, typeorm_1.InjectRepository)(blog_entity_1.Blog)),
+    __param(8, (0, typeorm_1.InjectRepository)(vehicle_model_entity_1.VehicleModel)),
     __metadata("design:paramtypes", [typeorm_2.Repository,
+        typeorm_2.Repository,
         typeorm_2.Repository,
         typeorm_2.Repository,
         typeorm_2.Repository,

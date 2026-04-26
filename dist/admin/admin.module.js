@@ -19,13 +19,14 @@ const brand_entity_1 = require("../entities/brand.entity");
 const subcategory_entity_1 = require("../entities/subcategory.entity");
 const staff_entity_1 = require("../entities/staff.entity");
 const blog_entity_1 = require("../entities/blog.entity");
+const vehicle_model_entity_1 = require("../entities/vehicle-model.entity");
 let AdminModule = class AdminModule {
 };
 exports.AdminModule = AdminModule;
 exports.AdminModule = AdminModule = __decorate([
     (0, common_1.Module)({
         imports: [
-            typeorm_1.TypeOrmModule.forFeature([product_entity_1.Product, category_entity_1.Category, order_entity_1.Order, user_entity_1.User, brand_entity_1.Brand, subcategory_entity_1.SubCategory, staff_entity_1.Staff, blog_entity_1.Blog]),
+            typeorm_1.TypeOrmModule.forFeature([product_entity_1.Product, category_entity_1.Category, order_entity_1.Order, user_entity_1.User, brand_entity_1.Brand, subcategory_entity_1.SubCategory, staff_entity_1.Staff, blog_entity_1.Blog, vehicle_model_entity_1.VehicleModel]),
         ],
         controllers: [admin_controller_1.AdminController],
         providers: [admin_service_1.AdminService],

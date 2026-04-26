@@ -10,3 +10,4 @@ export { SubCategory } from './subcategory.entity';
 export { Brand } from './brand.entity';
 export { Staff } from './staff.entity';
 export { Blog } from './blog.entity';
+export { VehicleModel } from './vehicle-model.entity';

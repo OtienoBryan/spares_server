@@ -51,6 +51,9 @@ export declare class AdminController {
         categoryId: number;
         subcategory: any;
         subcategoryId: number;
+        vehicleModel?: import("../entities").VehicleModel;
+        vehicleModelId?: number | null;
+        vehicleModels?: import("../entities").VehicleModel[];
         cartItems: import("../entities").CartItem[];
         orderItems: import("../entities").OrderItem[];
         createdAt: Date;
@@ -88,12 +91,54 @@ export declare class AdminController {
         categoryId: number;
         subcategory: any;
         subcategoryId: number;
+        vehicleModel?: import("../entities").VehicleModel;
+        vehicleModelId?: number | null;
+        vehicleModels?: import("../entities").VehicleModel[];
         cartItems: import("../entities").CartItem[];
         orderItems: import("../entities").OrderItem[];
         createdAt: Date;
         updatedAt: Date;
     } | null>;
-    createProduct(productData: any): Promise<import("../entities").Product[]>;
+    createProduct(productData: any): Promise<{
+        brandId: number | null;
+        brand: any;
+        brandEntity: undefined;
+        isActive: boolean;
+        isFeatured: boolean;
+        isOnOffer: boolean;
+        isPopularWine: boolean;
+        requiresAgeVerification: boolean;
+        id: number;
+        name: string;
+        description: string;
+        price: number;
+        originalPrice: number;
+        stock: number;
+        image: string;
+        images: string[];
+        alcoholContent: string;
+        volume: string;
+        origin: string;
+        tags: string[];
+        skus: Array<{
+            code: string;
+            price: number;
+            originalPrice?: number;
+        }>;
+        rating: number;
+        reviewCount: number;
+        category: any;
+        categoryId: number;
+        subcategory: any;
+        subcategoryId: number;
+        vehicleModel?: import("../entities").VehicleModel;
+        vehicleModelId?: number | null;
+        vehicleModels?: import("../entities").VehicleModel[];
+        cartItems: import("../entities").CartItem[];
+        orderItems: import("../entities").OrderItem[];
+        createdAt: Date;
+        updatedAt: Date;
+    } | null>;
     updateProduct(id: number, productData: any): Promise<{
         brandId: number | null;
         brand: any;
@@ -126,6 +171,9 @@ export declare class AdminController {
         categoryId: number;
         subcategory: any;
         subcategoryId: number;
+        vehicleModel?: import("../entities").VehicleModel;
+        vehicleModelId?: number | null;
+        vehicleModels?: import("../entities").VehicleModel[];
         cartItems: import("../entities").CartItem[];
         orderItems: import("../entities").OrderItem[];
         createdAt: Date;
@@ -169,4 +217,12 @@ export declare class AdminController {
     createBlog(blogData: any): Promise<import("../entities").Blog[]>;
     updateBlog(id: number, blogData: any): Promise<import("../entities").Blog | null>;
     deleteBlog(id: number): Promise<import("typeorm").DeleteResult>;
+    getAllVehicleModels(): Promise<import("../entities").VehicleModel[]>;
+    createVehicleModel(data: {
+        name: string;
+    }): Promise<import("../entities").VehicleModel>;
+    updateVehicleModel(id: number, data: {
+        name?: string;
+    }): Promise<import("../entities").VehicleModel | null>;
+    deleteVehicleModel(id: number): Promise<import("typeorm").DeleteResult>;
 }

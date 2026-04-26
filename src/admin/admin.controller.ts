@@ -204,4 +204,25 @@ export class AdminController {
   async deleteBlog(@Param('id', ParseIntPipe) id: number) {
     return this.adminService.deleteBlog(id);
   }
+
+  // Vehicle models management
+  @Get('vehicle-models')
+  async getAllVehicleModels() {
+    return this.adminService.getAllVehicleModels();
+  }
+
+  @Post('vehicle-models')
+  async createVehicleModel(@Body() data: { name: string }) {
+    return this.adminService.createVehicleModel(data);
+  }
+
+  @Put('vehicle-models/:id')
+  async updateVehicleModel(@Param('id', ParseIntPipe) id: number, @Body() data: { name?: string }) {
+    return this.adminService.updateVehicleModel(id, data);
+  }
+
+  @Delete('vehicle-models/:id')
+  async deleteVehicleModel(@Param('id', ParseIntPipe) id: number) {
+    return this.adminService.deleteVehicleModel(id);
+  }
 }

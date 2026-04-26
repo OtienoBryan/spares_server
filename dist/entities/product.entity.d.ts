@@ -1,5 +1,6 @@
 import { CartItem } from './cart-item.entity';
 import { OrderItem } from './order-item.entity';
+import { VehicleModel } from './vehicle-model.entity';
 export declare class Product {
     id: number;
     name: string;
@@ -32,6 +33,9 @@ export declare class Product {
     subcategoryId: number;
     brandEntity: any;
     brandId: number;
+    vehicleModel?: VehicleModel;
+    vehicleModelId?: number | null;
+    vehicleModels?: VehicleModel[];
     cartItems: CartItem[];
     orderItems: OrderItem[];
     createdAt: Date;

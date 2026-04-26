@@ -27,7 +27,7 @@ let ProductsService = class ProductsService {
     }
     async findAll() {
         return this.productRepository.find({
-            relations: ['category', 'subcategory'],
+            relations: ['category', 'subcategory', 'vehicleModel', 'vehicleModels'],
             where: { isActive: true },
             order: { createdAt: 'DESC' },
         });
@@ -35,27 +35,27 @@ let ProductsService = class ProductsService {
     async findOne(id) {
         return this.productRepository.findOne({
             where: { id, isActive: true },
-            relations: ['category', 'subcategory'],
+            relations: ['category', 'subcategory', 'vehicleModel', 'vehicleModels'],
         });
     }
     async findByCategory(categoryId) {
         return this.productRepository.find({
             where: { categoryId, isActive: true },
-            relations: ['category', 'subcategory'],
+            relations: ['category', 'subcategory', 'vehicleModel', 'vehicleModels'],
             order: { createdAt: 'DESC' },
         });
     }
     async findFeatured() {
         return this.productRepository.find({
             where: { isFeatured: true, isActive: true },
-            relations: ['category', 'subcategory'],
+            relations: ['category', 'subcategory', 'vehicleModel', 'vehicleModels'],
             order: { createdAt: 'DESC' },
         });
     }
     async findPopularWines() {
         return this.productRepository.find({
             where: { isPopularWine: true, isActive: true },
-            relations: ['category', 'subcategory'],
+            relations: ['category', 'subcategory', 'vehicleModel', 'vehicleModels'],
             order: { createdAt: 'DESC' },
         });
     }
@@ -64,6 +64,8 @@ let ProductsService = class ProductsService {
             .createQueryBuilder('product')
             .leftJoinAndSelect('product.category', 'category')
             .leftJoinAndSelect('product.subcategory', 'subcategory')
+            .leftJoinAndSelect('product.vehicleModel', 'vehicleModel')
+            .leftJoinAndSelect('product.vehicleModels', 'vehicleModels')
             .where('product.isActive = :isActive', { isActive: true })
             .andWhere('(product.name LIKE :query OR product.description LIKE :query OR product.brand LIKE :query)', { query: `%${query}%` })
             .orderBy('product.createdAt', 'DESC')

@@ -10,10 +10,11 @@ import { Brand } from '../entities/brand.entity';
 import { SubCategory } from '../entities/subcategory.entity';
 import { Staff } from '../entities/staff.entity';
 import { Blog } from '../entities/blog.entity';
+import { VehicleModel } from '../entities/vehicle-model.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Product, Category, Order, User, Brand, SubCategory, Staff, Blog]),
+    TypeOrmModule.forFeature([Product, Category, Order, User, Brand, SubCategory, Staff, Blog, VehicleModel]),
   ],
   controllers: [AdminController],
   providers: [AdminService],

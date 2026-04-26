@@ -150,6 +150,18 @@ let AdminController = class AdminController {
     async deleteBlog(id) {
         return this.adminService.deleteBlog(id);
     }
+    async getAllVehicleModels() {
+        return this.adminService.getAllVehicleModels();
+    }
+    async createVehicleModel(data) {
+        return this.adminService.createVehicleModel(data);
+    }
+    async updateVehicleModel(id, data) {
+        return this.adminService.updateVehicleModel(id, data);
+    }
+    async deleteVehicleModel(id) {
+        return this.adminService.deleteVehicleModel(id);
+    }
 };
 exports.AdminController = AdminController;
 __decorate([
@@ -368,6 +380,34 @@ __decorate([
     __metadata("design:paramtypes", [Number]),
     __metadata("design:returntype", Promise)
 ], AdminController.prototype, "deleteBlog", null);
+__decorate([
+    (0, common_1.Get)('vehicle-models'),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], AdminController.prototype, "getAllVehicleModels", null);
+__decorate([
+    (0, common_1.Post)('vehicle-models'),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], AdminController.prototype, "createVehicleModel", null);
+__decorate([
+    (0, common_1.Put)('vehicle-models/:id'),
+    __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number, Object]),
+    __metadata("design:returntype", Promise)
+], AdminController.prototype, "updateVehicleModel", null);
+__decorate([
+    (0, common_1.Delete)('vehicle-models/:id'),
+    __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number]),
+    __metadata("design:returntype", Promise)
+], AdminController.prototype, "deleteVehicleModel", null);
 exports.AdminController = AdminController = __decorate([
     (0, common_1.Controller)('api/admin'),
     __metadata("design:paramtypes", [admin_service_1.AdminService])

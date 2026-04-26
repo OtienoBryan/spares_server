@@ -7,6 +7,7 @@ import { Brand } from '../entities/brand.entity';
 import { SubCategory } from '../entities/subcategory.entity';
 import { Staff } from '../entities/staff.entity';
 import { Blog } from '../entities/blog.entity';
+import { VehicleModel } from '../entities/vehicle-model.entity';
 export declare class AdminService {
     private productRepository;
     private categoryRepository;
@@ -16,7 +17,8 @@ export declare class AdminService {
     private subCategoryRepository;
     private staffRepository;
     private blogRepository;
-    constructor(productRepository: Repository<Product>, categoryRepository: Repository<Category>, orderRepository: Repository<Order>, userRepository: Repository<User>, brandRepository: Repository<Brand>, subCategoryRepository: Repository<SubCategory>, staffRepository: Repository<Staff>, blogRepository: Repository<Blog>);
+    private vehicleModelRepository;
+    constructor(productRepository: Repository<Product>, categoryRepository: Repository<Category>, orderRepository: Repository<Order>, userRepository: Repository<User>, brandRepository: Repository<Brand>, subCategoryRepository: Repository<SubCategory>, staffRepository: Repository<Staff>, blogRepository: Repository<Blog>, vehicleModelRepository: Repository<VehicleModel>);
     getDashboardStats(): Promise<{
         totalProducts: number;
         totalCategories: number;
@@ -66,6 +68,9 @@ export declare class AdminService {
         categoryId: number;
         subcategory: any;
         subcategoryId: number;
+        vehicleModel?: VehicleModel;
+        vehicleModelId?: number | null;
+        vehicleModels?: VehicleModel[];
         cartItems: import("../entities").CartItem[];
         orderItems: import("../entities").OrderItem[];
         createdAt: Date;
@@ -103,12 +108,54 @@ export declare class AdminService {
         categoryId: number;
         subcategory: any;
         subcategoryId: number;
+        vehicleModel?: VehicleModel;
+        vehicleModelId?: number | null;
+        vehicleModels?: VehicleModel[];
         cartItems: import("../entities").CartItem[];
         orderItems: import("../entities").OrderItem[];
         createdAt: Date;
         updatedAt: Date;
     } | null>;
-    createProduct(productData: any): Promise<Product[]>;
+    createProduct(productData: any): Promise<{
+        brandId: number | null;
+        brand: any;
+        brandEntity: undefined;
+        isActive: boolean;
+        isFeatured: boolean;
+        isOnOffer: boolean;
+        isPopularWine: boolean;
+        requiresAgeVerification: boolean;
+        id: number;
+        name: string;
+        description: string;
+        price: number;
+        originalPrice: number;
+        stock: number;
+        image: string;
+        images: string[];
+        alcoholContent: string;
+        volume: string;
+        origin: string;
+        tags: string[];
+        skus: Array<{
+            code: string;
+            price: number;
+            originalPrice?: number;
+        }>;
+        rating: number;
+        reviewCount: number;
+        category: any;
+        categoryId: number;
+        subcategory: any;
+        subcategoryId: number;
+        vehicleModel?: VehicleModel;
+        vehicleModelId?: number | null;
+        vehicleModels?: VehicleModel[];
+        cartItems: import("../entities").CartItem[];
+        orderItems: import("../entities").OrderItem[];
+        createdAt: Date;
+        updatedAt: Date;
+    } | null>;
     updateProduct(id: number, productData: any): Promise<{
         brandId: number | null;
         brand: any;
@@ -141,6 +188,9 @@ export declare class AdminService {
         categoryId: number;
         subcategory: any;
         subcategoryId: number;
+        vehicleModel?: VehicleModel;
+        vehicleModelId?: number | null;
+        vehicleModels?: VehicleModel[];
         cartItems: import("../entities").CartItem[];
         orderItems: import("../entities").OrderItem[];
         createdAt: Date;
@@ -183,4 +233,16 @@ export declare class AdminService {
     createBlog(blogData: any): Promise<Blog[]>;
     updateBlog(id: number, blogData: any): Promise<Blog | null>;
     deleteBlog(id: number): Promise<import("typeorm").DeleteResult>;
+    private normalizeVehicleModelIdArray;
+    private resolveVehicleModelIdsForCreate;
+    private resolveVehicleModelIdsForUpdate;
+    private applyVehicleModelsToProduct;
+    getAllVehicleModels(): Promise<VehicleModel[]>;
+    createVehicleModel(data: {
+        name: string;
+    }): Promise<VehicleModel>;
+    updateVehicleModel(id: number, data: {
+        name?: string;
+    }): Promise<VehicleModel | null>;
+    deleteVehicleModel(id: number): Promise<import("typeorm").DeleteResult>;
 }

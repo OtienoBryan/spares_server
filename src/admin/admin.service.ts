@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 import { Product } from '../entities/product.entity';
 import { Category } from '../entities/category.entity';
@@ -10,6 +10,7 @@ import { Brand } from '../entities/brand.entity';
 import { SubCategory } from '../entities/subcategory.entity';
 import { Staff } from '../entities/staff.entity';
 import { Blog } from '../entities/blog.entity';
+import { VehicleModel } from '../entities/vehicle-model.entity';
 
 @Injectable()
 export class AdminService {
@@ -30,6 +31,8 @@ export class AdminService {
     private staffRepository: Repository<Staff>,
     @InjectRepository(Blog)
     private blogRepository: Repository<Blog>,
+    @InjectRepository(VehicleModel)
+    private vehicleModelRepository: Repository<VehicleModel>,
   ) {}
 
   // Dashboard statistics
@@ -74,7 +77,7 @@ export class AdminService {
   // Products management
   async getAllProducts() {
     const products = await this.productRepository.find({
-      relations: ['category', 'brandEntity', 'subcategory'],
+      relations: ['category', 'brandEntity', 'subcategory', 'vehicleModel', 'vehicleModels'],
       order: { createdAt: 'DESC' },
     });
 
@@ -122,7 +125,7 @@ export class AdminService {
   async getProductById(id: number) {
     const product = await this.productRepository.findOne({
       where: { id },
-      relations: ['category', 'brandEntity', 'subcategory'],
+      relations: ['category', 'brandEntity', 'subcategory', 'vehicleModel', 'vehicleModels'],
     });
 
     if (!product) return null;
@@ -211,12 +214,27 @@ export class AdminService {
     } else {
       productData.subcategoryId = null;
     }
-    
+
+    const vehicleModelIds = this.resolveVehicleModelIdsForCreate(productData);
+    delete productData.vehicleModelIds;
+    delete productData.vehicleModels;
+    productData.vehicleModelId = vehicleModelIds[0] ?? null;
+
     const product = this.productRepository.create(productData);
-    return this.productRepository.save(product);
+    const saveResult = await this.productRepository.save(product);
+    const saved = Array.isArray(saveResult) ? saveResult[0] : saveResult;
+    await this.applyVehicleModelsToProduct(saved, vehicleModelIds);
+    return this.getProductById(saved.id);
   }
 
   async updateProduct(id: number, productData: any) {
+    const resolvedVehicleIds = this.resolveVehicleModelIdsForUpdate(productData);
+    delete productData.vehicleModelIds;
+    delete productData.vehicleModels;
+    if (resolvedVehicleIds !== undefined) {
+      delete productData.vehicleModelId;
+    }
+
     console.log('🔧 [AdminService] updateProduct called with:');
     console.log('  ID:', id);
     console.log('  Product Data:', JSON.stringify(productData, null, 2));
@@ -299,18 +317,19 @@ export class AdminService {
     } else {
       console.log('  No subcategoryId in request data');
     }
-    
+
     console.log('  Final productData before database update:');
     console.log('    brandId:', productData.brandId);
     console.log('    brand:', productData.brand);
     console.log('    subcategoryId:', productData.subcategoryId);
+    console.log('    vehicleModelId:', productData.vehicleModelId, 'resolvedVehicleIds:', resolvedVehicleIds);
     console.log('    skus:', productData.skus);
     console.log('    Full data:', JSON.stringify(productData, null, 2));
     
     // Use save method instead of update for more reliable updates
     const existingProduct = await this.productRepository.findOne({ 
       where: { id },
-      relations: ['category', 'brandEntity', 'subcategory']
+      relations: ['category', 'brandEntity', 'subcategory', 'vehicleModels'],
     });
     if (!existingProduct) {
       throw new Error(`Product with ID ${id} not found`);
@@ -353,6 +372,10 @@ export class AdminService {
     }
     if (productData.requiresAgeVerification !== undefined) {
       mergedProduct.requiresAgeVerification = !!productData.requiresAgeVerification;
+    }
+
+    if (resolvedVehicleIds !== undefined) {
+      await this.applyVehicleModelsToProduct(mergedProduct as Product, resolvedVehicleIds);
     }
     
     console.log('  Final merged product before save:', {
@@ -578,5 +601,75 @@ export class AdminService {
 
   async deleteBlog(id: number) {
     return this.blogRepository.delete(id);
+  }
+
+  private normalizeVehicleModelIdArray(value: unknown): number[] {
+    if (!Array.isArray(value)) return [];
+    const nums = value
+      .map((v) => parseInt(String(v), 10))
+      .filter((n) => !Number.isNaN(n) && n > 0);
+    return [...new Set(nums)];
+  }
+
+  /** Create: prefer `vehicleModelIds` array; else legacy `vehicleModelId`. */
+  private resolveVehicleModelIdsForCreate(productData: any): number[] {
+    if (Object.prototype.hasOwnProperty.call(productData, 'vehicleModelIds')) {
+      return this.normalizeVehicleModelIdArray(productData.vehicleModelIds);
+    }
+    const v = productData.vehicleModelId;
+    if (v === undefined || v === null || v === '') return [];
+    const n = typeof v === 'string' ? parseInt(v, 10) : Number(v);
+    return !Number.isNaN(n) && n > 0 ? [n] : [];
+  }
+
+  /**
+   * Update: if `vehicleModelIds` present, use it; else if `vehicleModelId` present, legacy single field;
+   * else undefined (leave DB relations unchanged).
+   */
+  private resolveVehicleModelIdsForUpdate(productData: any): number[] | undefined {
+    if (Object.prototype.hasOwnProperty.call(productData, 'vehicleModelIds')) {
+      return this.normalizeVehicleModelIdArray(productData.vehicleModelIds);
+    }
+    if (Object.prototype.hasOwnProperty.call(productData, 'vehicleModelId')) {
+      const v = productData.vehicleModelId;
+      if (v === null || v === '') return [];
+      const n = typeof v === 'string' ? parseInt(v, 10) : Number(v);
+      return !Number.isNaN(n) && n > 0 ? [n] : [];
+    }
+    return undefined;
+  }
+
+  private async applyVehicleModelsToProduct(product: Product, orderedIds: number[]): Promise<void> {
+    if (orderedIds.length === 0) {
+      product.vehicleModels = [];
+      product.vehicleModelId = null;
+      return;
+    }
+    const models = await this.vehicleModelRepository.findBy({ id: In(orderedIds) });
+    const orderMap = new Map(orderedIds.map((mid, i) => [mid, i]));
+    models.sort((a, b) => (orderMap.get(a.id) ?? 0) - (orderMap.get(b.id) ?? 0));
+    product.vehicleModels = models;
+    product.vehicleModelId = models[0]?.id;
+  }
+
+  // Vehicle models management
+  async getAllVehicleModels() {
+    return this.vehicleModelRepository.find({ order: { name: 'ASC' } });
+  }
+
+  async createVehicleModel(data: { name: string }) {
+    const model = this.vehicleModelRepository.create({ name: data?.name?.trim() });
+    return this.vehicleModelRepository.save(model);
+  }
+
+  async updateVehicleModel(id: number, data: { name?: string }) {
+    const payload: Partial<VehicleModel> = {};
+    if (typeof data?.name === 'string') payload.name = data.name.trim();
+    await this.vehicleModelRepository.update(id, payload);
+    return this.vehicleModelRepository.findOne({ where: { id } });
+  }
+
+  async deleteVehicleModel(id: number) {
+    return this.vehicleModelRepository.delete(id);
   }
 }

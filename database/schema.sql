@@ -34,9 +34,11 @@ CREATE TABLE IF NOT EXISTS products (
     isPopularWine BOOLEAN DEFAULT FALSE,
     requiresAgeVerification BOOLEAN DEFAULT FALSE,
     categoryId INT NOT NULL,
+    vehicleModelId INT NULL,
     createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY (categoryId) REFERENCES categories(id) ON DELETE CASCADE
+    FOREIGN KEY (categoryId) REFERENCES categories(id) ON DELETE CASCADE,
+    FOREIGN KEY (vehicleModelId) REFERENCES vehicle_models(id) ON DELETE SET NULL
 );
 
 -- Create users table
@@ -127,11 +129,20 @@ CREATE TABLE IF NOT EXISTS riders (
     updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
+-- Create vehicle models table
+CREATE TABLE IF NOT EXISTS vehicle_models (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(255) NOT NULL UNIQUE,
+    createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
 -- Create indexes for better performance
 CREATE INDEX idx_products_category ON products(categoryId);
 CREATE INDEX idx_products_active ON products(isActive);
 CREATE INDEX idx_products_featured ON products(isFeatured);
 CREATE INDEX idx_products_popular_wine ON products(isPopularWine);
+CREATE INDEX idx_products_vehicle_model ON products(vehicleModelId);
 CREATE INDEX idx_cart_items_cart ON cart_items(cartId);
 CREATE INDEX idx_cart_items_product ON cart_items(productId);
 CREATE INDEX idx_orders_user ON orders(userId);
@@ -140,3 +151,4 @@ CREATE INDEX idx_orders_rider ON orders(riderId);
 CREATE INDEX idx_order_items_order ON order_items(orderId);
 CREATE INDEX idx_order_items_product ON order_items(productId);
 CREATE INDEX idx_riders_active ON riders(isActive);
+CREATE INDEX idx_vehicle_models_name ON vehicle_models(name);
