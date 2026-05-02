@@ -75,6 +75,7 @@ export declare class AdminService {
         vehicleModel?: VehicleModel;
         vehicleModelId?: number | null;
         vehicleModels?: VehicleModel[];
+        vehicleYears?: VehicleYear[];
         cartItems: import("../entities").CartItem[];
         orderItems: import("../entities").OrderItem[];
         createdAt: Date;
@@ -115,6 +116,7 @@ export declare class AdminService {
         vehicleModel?: VehicleModel;
         vehicleModelId?: number | null;
         vehicleModels?: VehicleModel[];
+        vehicleYears?: VehicleYear[];
         cartItems: import("../entities").CartItem[];
         orderItems: import("../entities").OrderItem[];
         createdAt: Date;
@@ -155,6 +157,7 @@ export declare class AdminService {
         vehicleModel?: VehicleModel;
         vehicleModelId?: number | null;
         vehicleModels?: VehicleModel[];
+        vehicleYears?: VehicleYear[];
         cartItems: import("../entities").CartItem[];
         orderItems: import("../entities").OrderItem[];
         createdAt: Date;
@@ -195,6 +198,7 @@ export declare class AdminService {
         vehicleModel?: VehicleModel;
         vehicleModelId?: number | null;
         vehicleModels?: VehicleModel[];
+        vehicleYears?: VehicleYear[];
         cartItems: import("../entities").CartItem[];
         orderItems: import("../entities").OrderItem[];
         createdAt: Date;
@@ -241,6 +245,7 @@ export declare class AdminService {
     private resolveVehicleModelIdsForCreate;
     private resolveVehicleModelIdsForUpdate;
     private applyVehicleModelsToProduct;
+    private applyVehicleYearsToProduct;
     getAllVehicleModels(): Promise<VehicleModel[]>;
     createVehicleModel(data: {
         name: string;

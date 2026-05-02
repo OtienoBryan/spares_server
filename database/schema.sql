@@ -160,6 +160,15 @@ CREATE TABLE IF NOT EXISTS vehicle_years (
     FOREIGN KEY (modelId) REFERENCES vehicle_models(id) ON DELETE CASCADE
 );
 
+-- Product ↔ vehicle year junction
+CREATE TABLE IF NOT EXISTS product_vehicle_years (
+    productId INT NOT NULL,
+    vehicleYearId INT NOT NULL,
+    PRIMARY KEY (productId, vehicleYearId),
+    FOREIGN KEY (productId) REFERENCES products(id) ON DELETE CASCADE,
+    FOREIGN KEY (vehicleYearId) REFERENCES vehicle_years(id) ON DELETE CASCADE
+);
+
 -- Create indexes for better performance
 CREATE INDEX idx_products_category ON products(categoryId);
 CREATE INDEX idx_products_active ON products(isActive);

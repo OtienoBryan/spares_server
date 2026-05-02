@@ -83,7 +83,7 @@ export class AdminService {
   // Products management
   async getAllProducts() {
     const products = await this.productRepository.find({
-      relations: ['category', 'brandEntity', 'subcategory', 'vehicleModel', 'vehicleModels'],
+      relations: ['category', 'brandEntity', 'subcategory', 'vehicleModel', 'vehicleModels', 'vehicleYears', 'vehicleYears.model', 'vehicleYears.model.make'],
       order: { createdAt: 'DESC' },
     });
 
@@ -131,7 +131,7 @@ export class AdminService {
   async getProductById(id: number) {
     const product = await this.productRepository.findOne({
       where: { id },
-      relations: ['category', 'brandEntity', 'subcategory', 'vehicleModel', 'vehicleModels'],
+      relations: ['category', 'brandEntity', 'subcategory', 'vehicleModel', 'vehicleModels', 'vehicleYears', 'vehicleYears.model', 'vehicleYears.model.make'],
     });
 
     if (!product) return null;
@@ -222,7 +222,9 @@ export class AdminService {
     }
 
     const vehicleModelIds = this.resolveVehicleModelIdsForCreate(productData);
+    const vehicleYearIds: number[] = Array.isArray(productData.vehicleYearIds) ? productData.vehicleYearIds.map(Number).filter(n => n > 0) : [];
     delete productData.vehicleModelIds;
+    delete productData.vehicleYearIds;
     delete productData.vehicleModels;
     productData.vehicleModelId = vehicleModelIds[0] ?? null;
 
@@ -230,12 +232,18 @@ export class AdminService {
     const saveResult = await this.productRepository.save(product);
     const saved = Array.isArray(saveResult) ? saveResult[0] : saveResult;
     await this.applyVehicleModelsToProduct(saved, vehicleModelIds);
+    await this.applyVehicleYearsToProduct(saved, vehicleYearIds);
+    await this.productRepository.save(saved); // flush both M2M relations
     return this.getProductById(saved.id);
   }
 
   async updateProduct(id: number, productData: any) {
     const resolvedVehicleIds = this.resolveVehicleModelIdsForUpdate(productData);
+    const resolvedYearIds: number[] | undefined = Object.prototype.hasOwnProperty.call(productData, 'vehicleYearIds')
+      ? (Array.isArray(productData.vehicleYearIds) ? productData.vehicleYearIds.map(Number).filter((n: number) => n > 0) : [])
+      : undefined;
     delete productData.vehicleModelIds;
+    delete productData.vehicleYearIds;
     delete productData.vehicleModels;
     if (resolvedVehicleIds !== undefined) {
       delete productData.vehicleModelId;
@@ -333,9 +341,9 @@ export class AdminService {
     console.log('    Full data:', JSON.stringify(productData, null, 2));
     
     // Use save method instead of update for more reliable updates
-    const existingProduct = await this.productRepository.findOne({ 
+    const existingProduct = await this.productRepository.findOne({
       where: { id },
-      relations: ['category', 'brandEntity', 'subcategory', 'vehicleModels'],
+      relations: ['category', 'brandEntity', 'subcategory', 'vehicleModels', 'vehicleYears'],
     });
     if (!existingProduct) {
       throw new Error(`Product with ID ${id} not found`);
@@ -382,6 +390,9 @@ export class AdminService {
 
     if (resolvedVehicleIds !== undefined) {
       await this.applyVehicleModelsToProduct(mergedProduct as Product, resolvedVehicleIds);
+    }
+    if (resolvedYearIds !== undefined) {
+      await this.applyVehicleYearsToProduct(mergedProduct as Product, resolvedYearIds);
     }
     
     console.log('  Final merged product before save:', {
@@ -656,6 +667,15 @@ export class AdminService {
     models.sort((a, b) => (orderMap.get(a.id) ?? 0) - (orderMap.get(b.id) ?? 0));
     product.vehicleModels = models;
     product.vehicleModelId = models[0]?.id;
+  }
+
+  private async applyVehicleYearsToProduct(product: Product, yearIds: number[]): Promise<void> {
+    if (yearIds.length === 0) {
+      product.vehicleYears = [];
+    } else {
+      product.vehicleYears = await this.vehicleYearRepository.findBy({ id: In(yearIds) });
+    }
+    // No save here — caller is responsible for saving, same as applyVehicleModelsToProduct
   }
 
   // Vehicle models management

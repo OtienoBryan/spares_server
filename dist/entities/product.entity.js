@@ -14,6 +14,7 @@ const typeorm_1 = require("typeorm");
 const cart_item_entity_1 = require("./cart-item.entity");
 const order_item_entity_1 = require("./order-item.entity");
 const vehicle_model_entity_1 = require("./vehicle-model.entity");
+const vehicle_year_entity_1 = require("./vehicle-year.entity");
 let Product = class Product {
     id;
     name;
@@ -45,6 +46,7 @@ let Product = class Product {
     vehicleModel;
     vehicleModelId;
     vehicleModels;
+    vehicleYears;
     cartItems;
     orderItems;
     createdAt;
@@ -180,6 +182,15 @@ __decorate([
     }),
     __metadata("design:type", Array)
 ], Product.prototype, "vehicleModels", void 0);
+__decorate([
+    (0, typeorm_1.ManyToMany)(() => vehicle_year_entity_1.VehicleYear, { eager: false }),
+    (0, typeorm_1.JoinTable)({
+        name: 'product_vehicle_years',
+        joinColumn: { name: 'productId', referencedColumnName: 'id' },
+        inverseJoinColumn: { name: 'vehicleYearId', referencedColumnName: 'id' },
+    }),
+    __metadata("design:type", Array)
+], Product.prototype, "vehicleYears", void 0);
 __decorate([
     (0, typeorm_1.OneToMany)(() => cart_item_entity_1.CartItem, cartItem => cartItem.product),
     __metadata("design:type", Array)

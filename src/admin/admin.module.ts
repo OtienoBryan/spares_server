@@ -17,6 +17,7 @@ import { VehicleYear } from '../entities/vehicle-year.entity';
 @Module({
   imports: [
     TypeOrmModule.forFeature([Product, Category, Order, User, Brand, SubCategory, Staff, Blog, VehicleModel, VehicleMake, VehicleYear]),
+    // VehicleYear already registered above; Product entity now owns the product_vehicle_years JoinTable
   ],
   controllers: [AdminController],
   providers: [AdminService],

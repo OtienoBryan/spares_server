@@ -2,6 +2,7 @@ import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, ManyToMany, JoinTabl
 import { CartItem } from './cart-item.entity';
 import { OrderItem } from './order-item.entity';
 import { VehicleModel } from './vehicle-model.entity';
+import { VehicleYear } from './vehicle-year.entity';
 
 @Entity('products')
 export class Product {
@@ -108,6 +109,14 @@ export class Product {
     inverseJoinColumn: { name: 'vehicleModelId', referencedColumnName: 'id' },
   })
   vehicleModels?: VehicleModel[];
+
+  @ManyToMany(() => VehicleYear, { eager: false })
+  @JoinTable({
+    name: 'product_vehicle_years',
+    joinColumn: { name: 'productId', referencedColumnName: 'id' },
+    inverseJoinColumn: { name: 'vehicleYearId', referencedColumnName: 'id' },
+  })
+  vehicleYears?: VehicleYear[];
 
   @OneToMany(() => CartItem, cartItem => cartItem.product)
   cartItems: CartItem[];

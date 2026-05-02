@@ -123,7 +123,7 @@ let AdminService = class AdminService {
     }
     async getAllProducts() {
         const products = await this.productRepository.find({
-            relations: ['category', 'brandEntity', 'subcategory', 'vehicleModel', 'vehicleModels'],
+            relations: ['category', 'brandEntity', 'subcategory', 'vehicleModel', 'vehicleModels', 'vehicleYears', 'vehicleYears.model', 'vehicleYears.model.make'],
             order: { createdAt: 'DESC' },
         });
         console.log('[getAllProducts] Total products:', products.length);
@@ -165,7 +165,7 @@ let AdminService = class AdminService {
     async getProductById(id) {
         const product = await this.productRepository.findOne({
             where: { id },
-            relations: ['category', 'brandEntity', 'subcategory', 'vehicleModel', 'vehicleModels'],
+            relations: ['category', 'brandEntity', 'subcategory', 'vehicleModel', 'vehicleModels', 'vehicleYears', 'vehicleYears.model', 'vehicleYears.model.make'],
         });
         if (!product)
             return null;
@@ -243,18 +243,26 @@ let AdminService = class AdminService {
             productData.subcategoryId = null;
         }
         const vehicleModelIds = this.resolveVehicleModelIdsForCreate(productData);
+        const vehicleYearIds = Array.isArray(productData.vehicleYearIds) ? productData.vehicleYearIds.map(Number).filter(n => n > 0) : [];
         delete productData.vehicleModelIds;
+        delete productData.vehicleYearIds;
         delete productData.vehicleModels;
         productData.vehicleModelId = vehicleModelIds[0] ?? null;
         const product = this.productRepository.create(productData);
         const saveResult = await this.productRepository.save(product);
         const saved = Array.isArray(saveResult) ? saveResult[0] : saveResult;
         await this.applyVehicleModelsToProduct(saved, vehicleModelIds);
+        await this.applyVehicleYearsToProduct(saved, vehicleYearIds);
+        await this.productRepository.save(saved);
         return this.getProductById(saved.id);
     }
     async updateProduct(id, productData) {
         const resolvedVehicleIds = this.resolveVehicleModelIdsForUpdate(productData);
+        const resolvedYearIds = Object.prototype.hasOwnProperty.call(productData, 'vehicleYearIds')
+            ? (Array.isArray(productData.vehicleYearIds) ? productData.vehicleYearIds.map(Number).filter((n) => n > 0) : [])
+            : undefined;
         delete productData.vehicleModelIds;
+        delete productData.vehicleYearIds;
         delete productData.vehicleModels;
         if (resolvedVehicleIds !== undefined) {
             delete productData.vehicleModelId;
@@ -342,7 +350,7 @@ let AdminService = class AdminService {
         console.log('    Full data:', JSON.stringify(productData, null, 2));
         const existingProduct = await this.productRepository.findOne({
             where: { id },
-            relations: ['category', 'brandEntity', 'subcategory', 'vehicleModels'],
+            relations: ['category', 'brandEntity', 'subcategory', 'vehicleModels', 'vehicleYears'],
         });
         if (!existingProduct) {
             throw new Error(`Product with ID ${id} not found`);
@@ -378,6 +386,9 @@ let AdminService = class AdminService {
         }
         if (resolvedVehicleIds !== undefined) {
             await this.applyVehicleModelsToProduct(mergedProduct, resolvedVehicleIds);
+        }
+        if (resolvedYearIds !== undefined) {
+            await this.applyVehicleYearsToProduct(mergedProduct, resolvedYearIds);
         }
         console.log('  Final merged product before save:', {
             id: mergedProduct.id,
@@ -597,6 +608,14 @@ let AdminService = class AdminService {
         models.sort((a, b) => (orderMap.get(a.id) ?? 0) - (orderMap.get(b.id) ?? 0));
         product.vehicleModels = models;
         product.vehicleModelId = models[0]?.id;
+    }
+    async applyVehicleYearsToProduct(product, yearIds) {
+        if (yearIds.length === 0) {
+            product.vehicleYears = [];
+        }
+        else {
+            product.vehicleYears = await this.vehicleYearRepository.findBy({ id: (0, typeorm_2.In)(yearIds) });
+        }
     }
     async getAllVehicleModels() {
         return this.vehicleModelRepository.find({ order: { name: 'ASC' }, relations: ['make'] });

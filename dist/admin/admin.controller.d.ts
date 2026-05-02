@@ -54,6 +54,7 @@ export declare class AdminController {
         vehicleModel?: import("../entities").VehicleModel;
         vehicleModelId?: number | null;
         vehicleModels?: import("../entities").VehicleModel[];
+        vehicleYears?: import("../entities").VehicleYear[];
         cartItems: import("../entities").CartItem[];
         orderItems: import("../entities").OrderItem[];
         createdAt: Date;
@@ -94,6 +95,7 @@ export declare class AdminController {
         vehicleModel?: import("../entities").VehicleModel;
         vehicleModelId?: number | null;
         vehicleModels?: import("../entities").VehicleModel[];
+        vehicleYears?: import("../entities").VehicleYear[];
         cartItems: import("../entities").CartItem[];
         orderItems: import("../entities").OrderItem[];
         createdAt: Date;
@@ -134,6 +136,7 @@ export declare class AdminController {
         vehicleModel?: import("../entities").VehicleModel;
         vehicleModelId?: number | null;
         vehicleModels?: import("../entities").VehicleModel[];
+        vehicleYears?: import("../entities").VehicleYear[];
         cartItems: import("../entities").CartItem[];
         orderItems: import("../entities").OrderItem[];
         createdAt: Date;
@@ -174,6 +177,7 @@ export declare class AdminController {
         vehicleModel?: import("../entities").VehicleModel;
         vehicleModelId?: number | null;
         vehicleModels?: import("../entities").VehicleModel[];
+        vehicleYears?: import("../entities").VehicleYear[];
         cartItems: import("../entities").CartItem[];
         orderItems: import("../entities").OrderItem[];
         createdAt: Date;
