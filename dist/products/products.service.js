@@ -30,7 +30,7 @@ let ProductsService = class ProductsService {
     }
     async findAll() {
         return this.productRepository.find({
-            relations: ['category', 'subcategory', 'vehicleModel', 'vehicleModels'],
+            relations: ['category', 'subcategory', 'vehicleModel', 'vehicleModels', 'vehicleModels.make'],
             where: { isActive: true },
             order: { createdAt: 'DESC' },
         });
@@ -38,7 +38,7 @@ let ProductsService = class ProductsService {
     async findOne(id) {
         return this.productRepository.findOne({
             where: { id, isActive: true },
-            relations: ['category', 'subcategory', 'vehicleModel', 'vehicleModels'],
+            relations: ['category', 'subcategory', 'vehicleModel', 'vehicleModels', 'vehicleModels.make', 'vehicleYears', 'vehicleYears.model', 'vehicleYears.model.make', 'productImages'],
         });
     }
     async findByCategory(categoryId) {

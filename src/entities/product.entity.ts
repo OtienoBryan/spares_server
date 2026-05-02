@@ -3,6 +3,7 @@ import { CartItem } from './cart-item.entity';
 import { OrderItem } from './order-item.entity';
 import { VehicleModel } from './vehicle-model.entity';
 import { VehicleYear } from './vehicle-year.entity';
+import { ProductImage } from './product-image.entity';
 
 @Entity('products')
 export class Product {
@@ -117,6 +118,9 @@ export class Product {
     inverseJoinColumn: { name: 'vehicleYearId', referencedColumnName: 'id' },
   })
   vehicleYears?: VehicleYear[];
+
+  @OneToMany(() => ProductImage, img => img.product, { eager: false })
+  productImages?: ProductImage[];
 
   @OneToMany(() => CartItem, cartItem => cartItem.product)
   cartItems: CartItem[];

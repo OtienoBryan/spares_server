@@ -160,6 +160,16 @@ CREATE TABLE IF NOT EXISTS vehicle_years (
     FOREIGN KEY (modelId) REFERENCES vehicle_models(id) ON DELETE CASCADE
 );
 
+-- Product secondary images
+CREATE TABLE IF NOT EXISTS product_images (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    productId INT NOT NULL,
+    url VARCHAR(500) NOT NULL,
+    sortOrder INT DEFAULT 0,
+    createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (productId) REFERENCES products(id) ON DELETE CASCADE
+);
+
 -- Product ↔ vehicle year junction
 CREATE TABLE IF NOT EXISTS product_vehicle_years (
     productId INT NOT NULL,

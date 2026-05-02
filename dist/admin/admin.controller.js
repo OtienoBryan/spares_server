@@ -186,6 +186,15 @@ let AdminController = class AdminController {
     async deleteVehicleYear(id) {
         return this.adminService.deleteVehicleYear(id);
     }
+    async getProductImages(id) {
+        return this.adminService.getProductImages(id);
+    }
+    async addProductImage(id, data) {
+        return this.adminService.addProductImage(id, data);
+    }
+    async deleteProductImage(imageId) {
+        return this.adminService.deleteProductImage(imageId);
+    }
 };
 exports.AdminController = AdminController;
 __decorate([
@@ -488,6 +497,28 @@ __decorate([
     __metadata("design:paramtypes", [Number]),
     __metadata("design:returntype", Promise)
 ], AdminController.prototype, "deleteVehicleYear", null);
+__decorate([
+    (0, common_1.Get)('products/:id/images'),
+    __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number]),
+    __metadata("design:returntype", Promise)
+], AdminController.prototype, "getProductImages", null);
+__decorate([
+    (0, common_1.Post)('products/:id/images'),
+    __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number, Object]),
+    __metadata("design:returntype", Promise)
+], AdminController.prototype, "addProductImage", null);
+__decorate([
+    (0, common_1.Delete)('product-images/:imageId'),
+    __param(0, (0, common_1.Param)('imageId', common_1.ParseIntPipe)),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number]),
+    __metadata("design:returntype", Promise)
+], AdminController.prototype, "deleteProductImage", null);
 exports.AdminController = AdminController = __decorate([
     (0, common_1.Controller)('api/admin'),
     __metadata("design:paramtypes", [admin_service_1.AdminService])

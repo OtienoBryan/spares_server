@@ -18,7 +18,7 @@ export class ProductsService {
 
   async findAll(): Promise<Product[]> {
     return this.productRepository.find({
-      relations: ['category', 'subcategory', 'vehicleModel', 'vehicleModels'],
+      relations: ['category', 'subcategory', 'vehicleModel', 'vehicleModels', 'vehicleModels.make'],
       where: { isActive: true },
       order: { createdAt: 'DESC' },
     });
@@ -27,7 +27,7 @@ export class ProductsService {
   async findOne(id: number): Promise<Product | null> {
     return this.productRepository.findOne({
       where: { id, isActive: true },
-      relations: ['category', 'subcategory', 'vehicleModel', 'vehicleModels'],
+      relations: ['category', 'subcategory', 'vehicleModel', 'vehicleModels', 'vehicleModels.make', 'vehicleYears', 'vehicleYears.model', 'vehicleYears.model.make', 'productImages'],
     });
   }
 

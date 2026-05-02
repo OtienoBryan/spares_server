@@ -15,6 +15,7 @@ const cart_item_entity_1 = require("./cart-item.entity");
 const order_item_entity_1 = require("./order-item.entity");
 const vehicle_model_entity_1 = require("./vehicle-model.entity");
 const vehicle_year_entity_1 = require("./vehicle-year.entity");
+const product_image_entity_1 = require("./product-image.entity");
 let Product = class Product {
     id;
     name;
@@ -47,6 +48,7 @@ let Product = class Product {
     vehicleModelId;
     vehicleModels;
     vehicleYears;
+    productImages;
     cartItems;
     orderItems;
     createdAt;
@@ -191,6 +193,10 @@ __decorate([
     }),
     __metadata("design:type", Array)
 ], Product.prototype, "vehicleYears", void 0);
+__decorate([
+    (0, typeorm_1.OneToMany)(() => product_image_entity_1.ProductImage, img => img.product, { eager: false }),
+    __metadata("design:type", Array)
+], Product.prototype, "productImages", void 0);
 __decorate([
     (0, typeorm_1.OneToMany)(() => cart_item_entity_1.CartItem, cartItem => cartItem.product),
     __metadata("design:type", Array)

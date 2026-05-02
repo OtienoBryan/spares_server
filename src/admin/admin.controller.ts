@@ -267,4 +267,23 @@ export class AdminController {
   async deleteVehicleYear(@Param('id', ParseIntPipe) id: number) {
     return this.adminService.deleteVehicleYear(id);
   }
+
+  // Product images management
+  @Get('products/:id/images')
+  async getProductImages(@Param('id', ParseIntPipe) id: number) {
+    return this.adminService.getProductImages(id);
+  }
+
+  @Post('products/:id/images')
+  async addProductImage(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() data: { url: string; sortOrder?: number },
+  ) {
+    return this.adminService.addProductImage(id, data);
+  }
+
+  @Delete('product-images/:imageId')
+  async deleteProductImage(@Param('imageId', ParseIntPipe) imageId: number) {
+    return this.adminService.deleteProductImage(imageId);
+  }
 }

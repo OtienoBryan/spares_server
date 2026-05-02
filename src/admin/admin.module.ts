@@ -13,11 +13,11 @@ import { Blog } from '../entities/blog.entity';
 import { VehicleModel } from '../entities/vehicle-model.entity';
 import { VehicleMake } from '../entities/vehicle-make.entity';
 import { VehicleYear } from '../entities/vehicle-year.entity';
+import { ProductImage } from '../entities/product-image.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Product, Category, Order, User, Brand, SubCategory, Staff, Blog, VehicleModel, VehicleMake, VehicleYear]),
-    // VehicleYear already registered above; Product entity now owns the product_vehicle_years JoinTable
+    TypeOrmModule.forFeature([Product, Category, Order, User, Brand, SubCategory, Staff, Blog, VehicleModel, VehicleMake, VehicleYear, ProductImage]),
   ],
   controllers: [AdminController],
   providers: [AdminService],

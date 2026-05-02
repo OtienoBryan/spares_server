@@ -61,6 +61,7 @@ const blog_entity_1 = require("../entities/blog.entity");
 const vehicle_model_entity_1 = require("../entities/vehicle-model.entity");
 const vehicle_make_entity_1 = require("../entities/vehicle-make.entity");
 const vehicle_year_entity_1 = require("../entities/vehicle-year.entity");
+const product_image_entity_1 = require("../entities/product-image.entity");
 let AdminService = class AdminService {
     productRepository;
     categoryRepository;
@@ -73,7 +74,8 @@ let AdminService = class AdminService {
     vehicleModelRepository;
     vehicleMakeRepository;
     vehicleYearRepository;
-    constructor(productRepository, categoryRepository, orderRepository, userRepository, brandRepository, subCategoryRepository, staffRepository, blogRepository, vehicleModelRepository, vehicleMakeRepository, vehicleYearRepository) {
+    productImageRepository;
+    constructor(productRepository, categoryRepository, orderRepository, userRepository, brandRepository, subCategoryRepository, staffRepository, blogRepository, vehicleModelRepository, vehicleMakeRepository, vehicleYearRepository, productImageRepository) {
         this.productRepository = productRepository;
         this.categoryRepository = categoryRepository;
         this.orderRepository = orderRepository;
@@ -85,6 +87,7 @@ let AdminService = class AdminService {
         this.vehicleModelRepository = vehicleModelRepository;
         this.vehicleMakeRepository = vehicleMakeRepository;
         this.vehicleYearRepository = vehicleYearRepository;
+        this.productImageRepository = productImageRepository;
     }
     async getDashboardStats() {
         const [totalProducts, totalCategories, totalOrders, totalUsers, recentOrders] = await Promise.all([
@@ -691,6 +694,26 @@ let AdminService = class AdminService {
     async deleteVehicleYear(id) {
         return this.vehicleYearRepository.delete(id);
     }
+    async getProductImages(productId) {
+        return this.productImageRepository.find({
+            where: { productId },
+            order: { sortOrder: 'ASC', createdAt: 'ASC' },
+        });
+    }
+    async addProductImage(productId, data) {
+        const count = await this.productImageRepository.count({ where: { productId } });
+        if (count >= 3)
+            throw new Error('Maximum of 3 secondary images per product');
+        const img = this.productImageRepository.create({
+            productId,
+            url: data.url,
+            sortOrder: data.sortOrder ?? count,
+        });
+        return this.productImageRepository.save(img);
+    }
+    async deleteProductImage(imageId) {
+        return this.productImageRepository.delete(imageId);
+    }
 };
 exports.AdminService = AdminService;
 exports.AdminService = AdminService = __decorate([
@@ -706,7 +729,9 @@ exports.AdminService = AdminService = __decorate([
     __param(8, (0, typeorm_1.InjectRepository)(vehicle_model_entity_1.VehicleModel)),
     __param(9, (0, typeorm_1.InjectRepository)(vehicle_make_entity_1.VehicleMake)),
     __param(10, (0, typeorm_1.InjectRepository)(vehicle_year_entity_1.VehicleYear)),
+    __param(11, (0, typeorm_1.InjectRepository)(product_image_entity_1.ProductImage)),
     __metadata("design:paramtypes", [typeorm_2.Repository,
+        typeorm_2.Repository,
         typeorm_2.Repository,
         typeorm_2.Repository,
         typeorm_2.Repository,

@@ -10,6 +10,7 @@ import { Blog } from '../entities/blog.entity';
 import { VehicleModel } from '../entities/vehicle-model.entity';
 import { VehicleMake } from '../entities/vehicle-make.entity';
 import { VehicleYear } from '../entities/vehicle-year.entity';
+import { ProductImage } from '../entities/product-image.entity';
 export declare class AdminService {
     private productRepository;
     private categoryRepository;
@@ -22,7 +23,8 @@ export declare class AdminService {
     private vehicleModelRepository;
     private vehicleMakeRepository;
     private vehicleYearRepository;
-    constructor(productRepository: Repository<Product>, categoryRepository: Repository<Category>, orderRepository: Repository<Order>, userRepository: Repository<User>, brandRepository: Repository<Brand>, subCategoryRepository: Repository<SubCategory>, staffRepository: Repository<Staff>, blogRepository: Repository<Blog>, vehicleModelRepository: Repository<VehicleModel>, vehicleMakeRepository: Repository<VehicleMake>, vehicleYearRepository: Repository<VehicleYear>);
+    private productImageRepository;
+    constructor(productRepository: Repository<Product>, categoryRepository: Repository<Category>, orderRepository: Repository<Order>, userRepository: Repository<User>, brandRepository: Repository<Brand>, subCategoryRepository: Repository<SubCategory>, staffRepository: Repository<Staff>, blogRepository: Repository<Blog>, vehicleModelRepository: Repository<VehicleModel>, vehicleMakeRepository: Repository<VehicleMake>, vehicleYearRepository: Repository<VehicleYear>, productImageRepository: Repository<ProductImage>);
     getDashboardStats(): Promise<{
         totalProducts: number;
         totalCategories: number;
@@ -76,6 +78,7 @@ export declare class AdminService {
         vehicleModelId?: number | null;
         vehicleModels?: VehicleModel[];
         vehicleYears?: VehicleYear[];
+        productImages?: ProductImage[];
         cartItems: import("../entities").CartItem[];
         orderItems: import("../entities").OrderItem[];
         createdAt: Date;
@@ -117,6 +120,7 @@ export declare class AdminService {
         vehicleModelId?: number | null;
         vehicleModels?: VehicleModel[];
         vehicleYears?: VehicleYear[];
+        productImages?: ProductImage[];
         cartItems: import("../entities").CartItem[];
         orderItems: import("../entities").OrderItem[];
         createdAt: Date;
@@ -158,6 +162,7 @@ export declare class AdminService {
         vehicleModelId?: number | null;
         vehicleModels?: VehicleModel[];
         vehicleYears?: VehicleYear[];
+        productImages?: ProductImage[];
         cartItems: import("../entities").CartItem[];
         orderItems: import("../entities").OrderItem[];
         createdAt: Date;
@@ -199,6 +204,7 @@ export declare class AdminService {
         vehicleModelId?: number | null;
         vehicleModels?: VehicleModel[];
         vehicleYears?: VehicleYear[];
+        productImages?: ProductImage[];
         cartItems: import("../entities").CartItem[];
         orderItems: import("../entities").OrderItem[];
         createdAt: Date;
@@ -278,4 +284,10 @@ export declare class AdminService {
         modelId?: number;
     }): Promise<VehicleYear | null>;
     deleteVehicleYear(id: number): Promise<import("typeorm").DeleteResult>;
+    getProductImages(productId: number): Promise<ProductImage[]>;
+    addProductImage(productId: number, data: {
+        url: string;
+        sortOrder?: number;
+    }): Promise<ProductImage>;
+    deleteProductImage(imageId: number): Promise<import("typeorm").DeleteResult>;
 }

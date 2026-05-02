@@ -2,6 +2,7 @@ import { CartItem } from './cart-item.entity';
 import { OrderItem } from './order-item.entity';
 import { VehicleModel } from './vehicle-model.entity';
 import { VehicleYear } from './vehicle-year.entity';
+import { ProductImage } from './product-image.entity';
 export declare class Product {
     id: number;
     name: string;
@@ -38,6 +39,7 @@ export declare class Product {
     vehicleModelId?: number | null;
     vehicleModels?: VehicleModel[];
     vehicleYears?: VehicleYear[];
+    productImages?: ProductImage[];
     cartItems: CartItem[];
     orderItems: OrderItem[];
     createdAt: Date;

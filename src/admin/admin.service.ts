@@ -13,6 +13,7 @@ import { Blog } from '../entities/blog.entity';
 import { VehicleModel } from '../entities/vehicle-model.entity';
 import { VehicleMake } from '../entities/vehicle-make.entity';
 import { VehicleYear } from '../entities/vehicle-year.entity';
+import { ProductImage } from '../entities/product-image.entity';
 
 @Injectable()
 export class AdminService {
@@ -39,6 +40,8 @@ export class AdminService {
     private vehicleMakeRepository: Repository<VehicleMake>,
     @InjectRepository(VehicleYear)
     private vehicleYearRepository: Repository<VehicleYear>,
+    @InjectRepository(ProductImage)
+    private productImageRepository: Repository<ProductImage>,
   ) {}
 
   // Dashboard statistics
@@ -758,5 +761,28 @@ export class AdminService {
 
   async deleteVehicleYear(id: number) {
     return this.vehicleYearRepository.delete(id);
+  }
+
+  // Product images management
+  async getProductImages(productId: number) {
+    return this.productImageRepository.find({
+      where: { productId },
+      order: { sortOrder: 'ASC', createdAt: 'ASC' },
+    });
+  }
+
+  async addProductImage(productId: number, data: { url: string; sortOrder?: number }) {
+    const count = await this.productImageRepository.count({ where: { productId } });
+    if (count >= 3) throw new Error('Maximum of 3 secondary images per product');
+    const img = this.productImageRepository.create({
+      productId,
+      url: data.url,
+      sortOrder: data.sortOrder ?? count,
+    });
+    return this.productImageRepository.save(img);
+  }
+
+  async deleteProductImage(imageId: number) {
+    return this.productImageRepository.delete(imageId);
   }
 }

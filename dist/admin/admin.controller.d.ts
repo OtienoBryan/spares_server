@@ -55,6 +55,7 @@ export declare class AdminController {
         vehicleModelId?: number | null;
         vehicleModels?: import("../entities").VehicleModel[];
         vehicleYears?: import("../entities").VehicleYear[];
+        productImages?: import("../entities").ProductImage[];
         cartItems: import("../entities").CartItem[];
         orderItems: import("../entities").OrderItem[];
         createdAt: Date;
@@ -96,6 +97,7 @@ export declare class AdminController {
         vehicleModelId?: number | null;
         vehicleModels?: import("../entities").VehicleModel[];
         vehicleYears?: import("../entities").VehicleYear[];
+        productImages?: import("../entities").ProductImage[];
         cartItems: import("../entities").CartItem[];
         orderItems: import("../entities").OrderItem[];
         createdAt: Date;
@@ -137,6 +139,7 @@ export declare class AdminController {
         vehicleModelId?: number | null;
         vehicleModels?: import("../entities").VehicleModel[];
         vehicleYears?: import("../entities").VehicleYear[];
+        productImages?: import("../entities").ProductImage[];
         cartItems: import("../entities").CartItem[];
         orderItems: import("../entities").OrderItem[];
         createdAt: Date;
@@ -178,6 +181,7 @@ export declare class AdminController {
         vehicleModelId?: number | null;
         vehicleModels?: import("../entities").VehicleModel[];
         vehicleYears?: import("../entities").VehicleYear[];
+        productImages?: import("../entities").ProductImage[];
         cartItems: import("../entities").CartItem[];
         orderItems: import("../entities").OrderItem[];
         createdAt: Date;
@@ -253,4 +257,10 @@ export declare class AdminController {
         modelId?: number;
     }): Promise<import("../entities").VehicleYear | null>;
     deleteVehicleYear(id: number): Promise<import("typeorm").DeleteResult>;
+    getProductImages(id: number): Promise<import("../entities").ProductImage[]>;
+    addProductImage(id: number, data: {
+        url: string;
+        sortOrder?: number;
+    }): Promise<import("../entities").ProductImage>;
+    deleteProductImage(imageId: number): Promise<import("typeorm").DeleteResult>;
 }
