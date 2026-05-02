@@ -162,6 +162,30 @@ let AdminController = class AdminController {
     async deleteVehicleModel(id) {
         return this.adminService.deleteVehicleModel(id);
     }
+    async getAllVehicleMakes() {
+        return this.adminService.getAllVehicleMakes();
+    }
+    async createVehicleMake(data) {
+        return this.adminService.createVehicleMake(data);
+    }
+    async updateVehicleMake(id, data) {
+        return this.adminService.updateVehicleMake(id, data);
+    }
+    async deleteVehicleMake(id) {
+        return this.adminService.deleteVehicleMake(id);
+    }
+    async getAllVehicleYears() {
+        return this.adminService.getAllVehicleYears();
+    }
+    async createVehicleYear(data) {
+        return this.adminService.createVehicleYear(data);
+    }
+    async updateVehicleYear(id, data) {
+        return this.adminService.updateVehicleYear(id, data);
+    }
+    async deleteVehicleYear(id) {
+        return this.adminService.deleteVehicleYear(id);
+    }
 };
 exports.AdminController = AdminController;
 __decorate([
@@ -408,6 +432,62 @@ __decorate([
     __metadata("design:paramtypes", [Number]),
     __metadata("design:returntype", Promise)
 ], AdminController.prototype, "deleteVehicleModel", null);
+__decorate([
+    (0, common_1.Get)('vehicle-makes'),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], AdminController.prototype, "getAllVehicleMakes", null);
+__decorate([
+    (0, common_1.Post)('vehicle-makes'),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], AdminController.prototype, "createVehicleMake", null);
+__decorate([
+    (0, common_1.Put)('vehicle-makes/:id'),
+    __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number, Object]),
+    __metadata("design:returntype", Promise)
+], AdminController.prototype, "updateVehicleMake", null);
+__decorate([
+    (0, common_1.Delete)('vehicle-makes/:id'),
+    __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number]),
+    __metadata("design:returntype", Promise)
+], AdminController.prototype, "deleteVehicleMake", null);
+__decorate([
+    (0, common_1.Get)('vehicle-years'),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], AdminController.prototype, "getAllVehicleYears", null);
+__decorate([
+    (0, common_1.Post)('vehicle-years'),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], AdminController.prototype, "createVehicleYear", null);
+__decorate([
+    (0, common_1.Put)('vehicle-years/:id'),
+    __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number, Object]),
+    __metadata("design:returntype", Promise)
+], AdminController.prototype, "updateVehicleYear", null);
+__decorate([
+    (0, common_1.Delete)('vehicle-years/:id'),
+    __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number]),
+    __metadata("design:returntype", Promise)
+], AdminController.prototype, "deleteVehicleYear", null);
 exports.AdminController = AdminController = __decorate([
     (0, common_1.Controller)('api/admin'),
     __metadata("design:paramtypes", [admin_service_1.AdminService])

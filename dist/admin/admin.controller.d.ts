@@ -220,9 +220,33 @@ export declare class AdminController {
     getAllVehicleModels(): Promise<import("../entities").VehicleModel[]>;
     createVehicleModel(data: {
         name: string;
-    }): Promise<import("../entities").VehicleModel>;
+        makeId?: number | null;
+    }): Promise<import("../entities").VehicleModel | null>;
     updateVehicleModel(id: number, data: {
         name?: string;
+        makeId?: number | null;
     }): Promise<import("../entities").VehicleModel | null>;
     deleteVehicleModel(id: number): Promise<import("typeorm").DeleteResult>;
+    getAllVehicleMakes(): Promise<import("../entities").VehicleMake[]>;
+    createVehicleMake(data: {
+        name: string;
+        logo?: string | null;
+    }): Promise<import("../entities").VehicleMake>;
+    updateVehicleMake(id: number, data: {
+        name?: string;
+        logo?: string | null;
+    }): Promise<import("../entities").VehicleMake | null>;
+    deleteVehicleMake(id: number): Promise<import("typeorm").DeleteResult>;
+    getAllVehicleYears(): Promise<import("../entities").VehicleYear[]>;
+    createVehicleYear(data: {
+        yearFrom: number;
+        yearTo?: number | null;
+        modelId: number;
+    }): Promise<import("../entities").VehicleYear | null>;
+    updateVehicleYear(id: number, data: {
+        yearFrom?: number;
+        yearTo?: number | null;
+        modelId?: number;
+    }): Promise<import("../entities").VehicleYear | null>;
+    deleteVehicleYear(id: number): Promise<import("typeorm").DeleteResult>;
 }

@@ -212,17 +212,59 @@ export class AdminController {
   }
 
   @Post('vehicle-models')
-  async createVehicleModel(@Body() data: { name: string }) {
+  async createVehicleModel(@Body() data: { name: string; makeId?: number | null }) {
     return this.adminService.createVehicleModel(data);
   }
 
   @Put('vehicle-models/:id')
-  async updateVehicleModel(@Param('id', ParseIntPipe) id: number, @Body() data: { name?: string }) {
+  async updateVehicleModel(@Param('id', ParseIntPipe) id: number, @Body() data: { name?: string; makeId?: number | null }) {
     return this.adminService.updateVehicleModel(id, data);
   }
 
   @Delete('vehicle-models/:id')
   async deleteVehicleModel(@Param('id', ParseIntPipe) id: number) {
     return this.adminService.deleteVehicleModel(id);
+  }
+
+  // Vehicle makes management
+  @Get('vehicle-makes')
+  async getAllVehicleMakes() {
+    return this.adminService.getAllVehicleMakes();
+  }
+
+  @Post('vehicle-makes')
+  async createVehicleMake(@Body() data: { name: string; logo?: string | null }) {
+    return this.adminService.createVehicleMake(data);
+  }
+
+  @Put('vehicle-makes/:id')
+  async updateVehicleMake(@Param('id', ParseIntPipe) id: number, @Body() data: { name?: string; logo?: string | null }) {
+    return this.adminService.updateVehicleMake(id, data);
+  }
+
+  @Delete('vehicle-makes/:id')
+  async deleteVehicleMake(@Param('id', ParseIntPipe) id: number) {
+    return this.adminService.deleteVehicleMake(id);
+  }
+
+  // Vehicle years management
+  @Get('vehicle-years')
+  async getAllVehicleYears() {
+    return this.adminService.getAllVehicleYears();
+  }
+
+  @Post('vehicle-years')
+  async createVehicleYear(@Body() data: { yearFrom: number; yearTo?: number | null; modelId: number }) {
+    return this.adminService.createVehicleYear(data);
+  }
+
+  @Put('vehicle-years/:id')
+  async updateVehicleYear(@Param('id', ParseIntPipe) id: number, @Body() data: { yearFrom?: number; yearTo?: number | null; modelId?: number }) {
+    return this.adminService.updateVehicleYear(id, data);
+  }
+
+  @Delete('vehicle-years/:id')
+  async deleteVehicleYear(@Param('id', ParseIntPipe) id: number) {
+    return this.adminService.deleteVehicleYear(id);
   }
 }

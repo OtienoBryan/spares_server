@@ -8,6 +8,8 @@ import { SubCategory } from '../entities/subcategory.entity';
 import { Staff } from '../entities/staff.entity';
 import { Blog } from '../entities/blog.entity';
 import { VehicleModel } from '../entities/vehicle-model.entity';
+import { VehicleMake } from '../entities/vehicle-make.entity';
+import { VehicleYear } from '../entities/vehicle-year.entity';
 export declare class AdminService {
     private productRepository;
     private categoryRepository;
@@ -18,7 +20,9 @@ export declare class AdminService {
     private staffRepository;
     private blogRepository;
     private vehicleModelRepository;
-    constructor(productRepository: Repository<Product>, categoryRepository: Repository<Category>, orderRepository: Repository<Order>, userRepository: Repository<User>, brandRepository: Repository<Brand>, subCategoryRepository: Repository<SubCategory>, staffRepository: Repository<Staff>, blogRepository: Repository<Blog>, vehicleModelRepository: Repository<VehicleModel>);
+    private vehicleMakeRepository;
+    private vehicleYearRepository;
+    constructor(productRepository: Repository<Product>, categoryRepository: Repository<Category>, orderRepository: Repository<Order>, userRepository: Repository<User>, brandRepository: Repository<Brand>, subCategoryRepository: Repository<SubCategory>, staffRepository: Repository<Staff>, blogRepository: Repository<Blog>, vehicleModelRepository: Repository<VehicleModel>, vehicleMakeRepository: Repository<VehicleMake>, vehicleYearRepository: Repository<VehicleYear>);
     getDashboardStats(): Promise<{
         totalProducts: number;
         totalCategories: number;
@@ -240,9 +244,33 @@ export declare class AdminService {
     getAllVehicleModels(): Promise<VehicleModel[]>;
     createVehicleModel(data: {
         name: string;
-    }): Promise<VehicleModel>;
+        makeId?: number | null;
+    }): Promise<VehicleModel | null>;
     updateVehicleModel(id: number, data: {
         name?: string;
+        makeId?: number | null;
     }): Promise<VehicleModel | null>;
     deleteVehicleModel(id: number): Promise<import("typeorm").DeleteResult>;
+    getAllVehicleMakes(): Promise<VehicleMake[]>;
+    createVehicleMake(data: {
+        name: string;
+        logo?: string | null;
+    }): Promise<VehicleMake>;
+    updateVehicleMake(id: number, data: {
+        name?: string;
+        logo?: string | null;
+    }): Promise<VehicleMake | null>;
+    deleteVehicleMake(id: number): Promise<import("typeorm").DeleteResult>;
+    getAllVehicleYears(): Promise<VehicleYear[]>;
+    createVehicleYear(data: {
+        yearFrom: number;
+        yearTo?: number | null;
+        modelId: number;
+    }): Promise<VehicleYear | null>;
+    updateVehicleYear(id: number, data: {
+        yearFrom?: number;
+        yearTo?: number | null;
+        modelId?: number;
+    }): Promise<VehicleYear | null>;
+    deleteVehicleYear(id: number): Promise<import("typeorm").DeleteResult>;
 }

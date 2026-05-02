@@ -59,6 +59,8 @@ const subcategory_entity_1 = require("../entities/subcategory.entity");
 const staff_entity_1 = require("../entities/staff.entity");
 const blog_entity_1 = require("../entities/blog.entity");
 const vehicle_model_entity_1 = require("../entities/vehicle-model.entity");
+const vehicle_make_entity_1 = require("../entities/vehicle-make.entity");
+const vehicle_year_entity_1 = require("../entities/vehicle-year.entity");
 let AdminService = class AdminService {
     productRepository;
     categoryRepository;
@@ -69,7 +71,9 @@ let AdminService = class AdminService {
     staffRepository;
     blogRepository;
     vehicleModelRepository;
-    constructor(productRepository, categoryRepository, orderRepository, userRepository, brandRepository, subCategoryRepository, staffRepository, blogRepository, vehicleModelRepository) {
+    vehicleMakeRepository;
+    vehicleYearRepository;
+    constructor(productRepository, categoryRepository, orderRepository, userRepository, brandRepository, subCategoryRepository, staffRepository, blogRepository, vehicleModelRepository, vehicleMakeRepository, vehicleYearRepository) {
         this.productRepository = productRepository;
         this.categoryRepository = categoryRepository;
         this.orderRepository = orderRepository;
@@ -79,6 +83,8 @@ let AdminService = class AdminService {
         this.staffRepository = staffRepository;
         this.blogRepository = blogRepository;
         this.vehicleModelRepository = vehicleModelRepository;
+        this.vehicleMakeRepository = vehicleMakeRepository;
+        this.vehicleYearRepository = vehicleYearRepository;
     }
     async getDashboardStats() {
         const [totalProducts, totalCategories, totalOrders, totalUsers, recentOrders] = await Promise.all([
@@ -593,21 +599,78 @@ let AdminService = class AdminService {
         product.vehicleModelId = models[0]?.id;
     }
     async getAllVehicleModels() {
-        return this.vehicleModelRepository.find({ order: { name: 'ASC' } });
+        return this.vehicleModelRepository.find({ order: { name: 'ASC' }, relations: ['make'] });
     }
     async createVehicleModel(data) {
-        const model = this.vehicleModelRepository.create({ name: data?.name?.trim() });
-        return this.vehicleModelRepository.save(model);
+        const model = this.vehicleModelRepository.create({
+            name: data?.name?.trim(),
+            makeId: data?.makeId ?? null,
+        });
+        const saved = await this.vehicleModelRepository.save(model);
+        return this.vehicleModelRepository.findOne({ where: { id: saved.id }, relations: ['make'] });
     }
     async updateVehicleModel(id, data) {
         const payload = {};
         if (typeof data?.name === 'string')
             payload.name = data.name.trim();
+        if (Object.prototype.hasOwnProperty.call(data, 'makeId'))
+            payload.makeId = data.makeId ?? null;
         await this.vehicleModelRepository.update(id, payload);
-        return this.vehicleModelRepository.findOne({ where: { id } });
+        return this.vehicleModelRepository.findOne({ where: { id }, relations: ['make'] });
     }
     async deleteVehicleModel(id) {
         return this.vehicleModelRepository.delete(id);
+    }
+    async getAllVehicleMakes() {
+        return this.vehicleMakeRepository.find({ order: { name: 'ASC' } });
+    }
+    async createVehicleMake(data) {
+        const make = this.vehicleMakeRepository.create({
+            name: data?.name?.trim(),
+            logo: data?.logo ?? null,
+        });
+        return this.vehicleMakeRepository.save(make);
+    }
+    async updateVehicleMake(id, data) {
+        const payload = {};
+        if (typeof data?.name === 'string')
+            payload.name = data.name.trim();
+        if (Object.prototype.hasOwnProperty.call(data, 'logo'))
+            payload.logo = data.logo ?? null;
+        await this.vehicleMakeRepository.update(id, payload);
+        return this.vehicleMakeRepository.findOne({ where: { id } });
+    }
+    async deleteVehicleMake(id) {
+        return this.vehicleMakeRepository.delete(id);
+    }
+    async getAllVehicleYears() {
+        return this.vehicleYearRepository.find({
+            order: { yearFrom: 'DESC', modelId: 'ASC' },
+            relations: ['model', 'model.make'],
+        });
+    }
+    async createVehicleYear(data) {
+        const entry = this.vehicleYearRepository.create({
+            yearFrom: data.yearFrom,
+            yearTo: data.yearTo ?? null,
+            modelId: data.modelId,
+        });
+        const saved = await this.vehicleYearRepository.save(entry);
+        return this.vehicleYearRepository.findOne({ where: { id: saved.id }, relations: ['model', 'model.make'] });
+    }
+    async updateVehicleYear(id, data) {
+        const payload = {};
+        if (data.yearFrom !== undefined)
+            payload.yearFrom = data.yearFrom;
+        if (Object.prototype.hasOwnProperty.call(data, 'yearTo'))
+            payload.yearTo = data.yearTo ?? null;
+        if (data.modelId !== undefined)
+            payload.modelId = data.modelId;
+        await this.vehicleYearRepository.update(id, payload);
+        return this.vehicleYearRepository.findOne({ where: { id }, relations: ['model', 'model.make'] });
+    }
+    async deleteVehicleYear(id) {
+        return this.vehicleYearRepository.delete(id);
     }
 };
 exports.AdminService = AdminService;
@@ -622,7 +685,11 @@ exports.AdminService = AdminService = __decorate([
     __param(6, (0, typeorm_1.InjectRepository)(staff_entity_1.Staff)),
     __param(7, (0, typeorm_1.InjectRepository)(blog_entity_1.Blog)),
     __param(8, (0, typeorm_1.InjectRepository)(vehicle_model_entity_1.VehicleModel)),
+    __param(9, (0, typeorm_1.InjectRepository)(vehicle_make_entity_1.VehicleMake)),
+    __param(10, (0, typeorm_1.InjectRepository)(vehicle_year_entity_1.VehicleYear)),
     __metadata("design:paramtypes", [typeorm_2.Repository,
+        typeorm_2.Repository,
+        typeorm_2.Repository,
         typeorm_2.Repository,
         typeorm_2.Repository,
         typeorm_2.Repository,

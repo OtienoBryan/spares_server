@@ -9,50 +9,37 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.VehicleModel = void 0;
+exports.VehicleMake = void 0;
 const typeorm_1 = require("typeorm");
-const product_entity_1 = require("./product.entity");
-const vehicle_make_entity_1 = require("./vehicle-make.entity");
-let VehicleModel = class VehicleModel {
+let VehicleMake = class VehicleMake {
     id;
     name;
-    makeId;
-    make;
-    products;
+    logo;
     createdAt;
     updatedAt;
 };
-exports.VehicleModel = VehicleModel;
+exports.VehicleMake = VehicleMake;
 __decorate([
     (0, typeorm_1.PrimaryGeneratedColumn)(),
     __metadata("design:type", Number)
-], VehicleModel.prototype, "id", void 0);
+], VehicleMake.prototype, "id", void 0);
 __decorate([
     (0, typeorm_1.Column)({ type: 'varchar', length: 255, unique: true }),
     __metadata("design:type", String)
-], VehicleModel.prototype, "name", void 0);
+], VehicleMake.prototype, "name", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ type: 'int', nullable: true, default: null }),
+    (0, typeorm_1.Column)({ type: 'varchar', length: 500, nullable: true, default: null }),
     __metadata("design:type", Object)
-], VehicleModel.prototype, "makeId", void 0);
-__decorate([
-    (0, typeorm_1.ManyToOne)(() => vehicle_make_entity_1.VehicleMake, { nullable: true, onDelete: 'SET NULL', eager: false }),
-    (0, typeorm_1.JoinColumn)({ name: 'makeId' }),
-    __metadata("design:type", vehicle_make_entity_1.VehicleMake)
-], VehicleModel.prototype, "make", void 0);
-__decorate([
-    (0, typeorm_1.ManyToMany)(() => product_entity_1.Product, (product) => product.vehicleModels),
-    __metadata("design:type", Array)
-], VehicleModel.prototype, "products", void 0);
+], VehicleMake.prototype, "logo", void 0);
 __decorate([
     (0, typeorm_1.CreateDateColumn)({ type: 'timestamp' }),
     __metadata("design:type", Date)
-], VehicleModel.prototype, "createdAt", void 0);
+], VehicleMake.prototype, "createdAt", void 0);
 __decorate([
     (0, typeorm_1.UpdateDateColumn)({ type: 'timestamp' }),
     __metadata("design:type", Date)
-], VehicleModel.prototype, "updatedAt", void 0);
-exports.VehicleModel = VehicleModel = __decorate([
-    (0, typeorm_1.Entity)('vehicle_models')
-], VehicleModel);
-//# sourceMappingURL=vehicle-model.entity.js.map
+], VehicleMake.prototype, "updatedAt", void 0);
+exports.VehicleMake = VehicleMake = __decorate([
+    (0, typeorm_1.Entity)('vehicle_makes')
+], VehicleMake);
+//# sourceMappingURL=vehicle-make.entity.js.map

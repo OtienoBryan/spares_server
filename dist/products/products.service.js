@@ -18,12 +18,15 @@ const typeorm_1 = require("@nestjs/typeorm");
 const typeorm_2 = require("typeorm");
 const product_entity_1 = require("../entities/product.entity");
 const category_entity_1 = require("../entities/category.entity");
+const vehicle_make_entity_1 = require("../entities/vehicle-make.entity");
 let ProductsService = class ProductsService {
     productRepository;
     categoryRepository;
-    constructor(productRepository, categoryRepository) {
+    vehicleMakeRepository;
+    constructor(productRepository, categoryRepository, vehicleMakeRepository) {
         this.productRepository = productRepository;
         this.categoryRepository = categoryRepository;
+        this.vehicleMakeRepository = vehicleMakeRepository;
     }
     async findAll() {
         return this.productRepository.find({
@@ -82,13 +85,29 @@ let ProductsService = class ProductsService {
             where: { id, isActive: true },
         });
     }
+    async getVehicleMakes() {
+        return this.vehicleMakeRepository.find({ order: { name: 'ASC' } });
+    }
+    async findByVehicleMake(makeId) {
+        return this.productRepository
+            .createQueryBuilder('product')
+            .leftJoinAndSelect('product.category', 'category')
+            .leftJoinAndSelect('product.subcategory', 'subcategory')
+            .leftJoinAndSelect('product.vehicleModels', 'vehicleModel')
+            .where('vehicleModel.makeId = :makeId', { makeId })
+            .andWhere('product.isActive = :isActive', { isActive: true })
+            .orderBy('product.createdAt', 'DESC')
+            .getMany();
+    }
 };
 exports.ProductsService = ProductsService;
 exports.ProductsService = ProductsService = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, typeorm_1.InjectRepository)(product_entity_1.Product)),
     __param(1, (0, typeorm_1.InjectRepository)(category_entity_1.Category)),
+    __param(2, (0, typeorm_1.InjectRepository)(vehicle_make_entity_1.VehicleMake)),
     __metadata("design:paramtypes", [typeorm_2.Repository,
+        typeorm_2.Repository,
         typeorm_2.Repository])
 ], ProductsService);
 //# sourceMappingURL=products.service.js.map

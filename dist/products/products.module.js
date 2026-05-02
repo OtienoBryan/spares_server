@@ -10,16 +10,18 @@ exports.ProductsModule = void 0;
 const common_1 = require("@nestjs/common");
 const typeorm_1 = require("@nestjs/typeorm");
 const products_controller_1 = require("./products.controller");
+const vehicle_makes_public_controller_1 = require("./vehicle-makes-public.controller");
 const products_service_1 = require("./products.service");
 const product_entity_1 = require("../entities/product.entity");
 const category_entity_1 = require("../entities/category.entity");
+const vehicle_make_entity_1 = require("../entities/vehicle-make.entity");
 let ProductsModule = class ProductsModule {
 };
 exports.ProductsModule = ProductsModule;
 exports.ProductsModule = ProductsModule = __decorate([
     (0, common_1.Module)({
-        imports: [typeorm_1.TypeOrmModule.forFeature([product_entity_1.Product, category_entity_1.Category])],
-        controllers: [products_controller_1.ProductsController],
+        imports: [typeorm_1.TypeOrmModule.forFeature([product_entity_1.Product, category_entity_1.Category, vehicle_make_entity_1.VehicleMake])],
+        controllers: [products_controller_1.ProductsController, vehicle_makes_public_controller_1.VehicleMakesPublicController],
         providers: [products_service_1.ProductsService],
         exports: [products_service_1.ProductsService],
     })

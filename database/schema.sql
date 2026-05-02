@@ -129,12 +129,35 @@ CREATE TABLE IF NOT EXISTS riders (
     updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
+-- Create vehicle makes table
+CREATE TABLE IF NOT EXISTS vehicle_makes (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(255) NOT NULL UNIQUE,
+    logo VARCHAR(500) NULL,
+    createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
 -- Create vehicle models table
 CREATE TABLE IF NOT EXISTS vehicle_models (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(255) NOT NULL UNIQUE,
+    makeId INT NULL,
     createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+    updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (makeId) REFERENCES vehicle_makes(id) ON DELETE SET NULL
+);
+
+-- Create vehicle years table
+CREATE TABLE IF NOT EXISTS vehicle_years (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    yearFrom INT NOT NULL,
+    yearTo INT NULL,
+    modelId INT NOT NULL,
+    createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    UNIQUE KEY uq_vehicle_year_range_model (yearFrom, yearTo, modelId),
+    FOREIGN KEY (modelId) REFERENCES vehicle_models(id) ON DELETE CASCADE
 );
 
 -- Create indexes for better performance
@@ -152,3 +175,4 @@ CREATE INDEX idx_order_items_order ON order_items(orderId);
 CREATE INDEX idx_order_items_product ON order_items(productId);
 CREATE INDEX idx_riders_active ON riders(isActive);
 CREATE INDEX idx_vehicle_models_name ON vehicle_models(name);
+CREATE INDEX idx_vehicle_makes_name ON vehicle_makes(name);

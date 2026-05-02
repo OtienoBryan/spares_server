@@ -38,6 +38,9 @@ let ProductsController = class ProductsController {
     async findByCategory(categoryId) {
         return this.productsService.findByCategory(categoryId);
     }
+    async findByVehicleMake(makeId) {
+        return this.productsService.findByVehicleMake(makeId);
+    }
     async findOne(id) {
         return this.productsService.findOne(id);
     }
@@ -75,6 +78,13 @@ __decorate([
     __metadata("design:paramtypes", [Number]),
     __metadata("design:returntype", Promise)
 ], ProductsController.prototype, "findByCategory", null);
+__decorate([
+    (0, common_1.Get)('vehicle-make/:makeId'),
+    __param(0, (0, common_1.Param)('makeId', common_1.ParseIntPipe)),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number]),
+    __metadata("design:returntype", Promise)
+], ProductsController.prototype, "findByVehicleMake", null);
 __decorate([
     (0, common_1.Get)(':id'),
     __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),

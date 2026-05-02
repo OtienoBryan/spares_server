@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Product } from '../entities/product.entity';
 import { Category } from '../entities/category.entity';
+import { VehicleMake } from '../entities/vehicle-make.entity';
 
 @Injectable()
 export class ProductsService {
@@ -11,6 +12,8 @@ export class ProductsService {
     private productRepository: Repository<Product>,
     @InjectRepository(Category)
     private categoryRepository: Repository<Category>,
+    @InjectRepository(VehicleMake)
+    private vehicleMakeRepository: Repository<VehicleMake>,
   ) {}
 
   async findAll(): Promise<Product[]> {
@@ -79,5 +82,21 @@ export class ProductsService {
     return this.categoryRepository.findOne({
       where: { id, isActive: true },
     });
+  }
+
+  async getVehicleMakes(): Promise<VehicleMake[]> {
+    return this.vehicleMakeRepository.find({ order: { name: 'ASC' } });
+  }
+
+  async findByVehicleMake(makeId: number): Promise<Product[]> {
+    return this.productRepository
+      .createQueryBuilder('product')
+      .leftJoinAndSelect('product.category', 'category')
+      .leftJoinAndSelect('product.subcategory', 'subcategory')
+      .leftJoinAndSelect('product.vehicleModels', 'vehicleModel')
+      .where('vehicleModel.makeId = :makeId', { makeId })
+      .andWhere('product.isActive = :isActive', { isActive: true })
+      .orderBy('product.createdAt', 'DESC')
+      .getMany();
   }
 }

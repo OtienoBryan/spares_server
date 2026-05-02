@@ -33,6 +33,11 @@ export class ProductsController {
     return this.productsService.findByCategory(categoryId);
   }
 
+  @Get('vehicle-make/:makeId')
+  async findByVehicleMake(@Param('makeId', ParseIntPipe) makeId: number) {
+    return this.productsService.findByVehicleMake(makeId);
+  }
+
   @Get(':id')
   async findOne(@Param('id', ParseIntPipe) id: number) {
     return this.productsService.findOne(id);

@@ -11,3 +11,5 @@ export { Brand } from './brand.entity';
 export { Staff } from './staff.entity';
 export { Blog } from './blog.entity';
 export { VehicleModel } from './vehicle-model.entity';
+export { VehicleMake } from './vehicle-make.entity';
+export { VehicleYear } from './vehicle-year.entity';

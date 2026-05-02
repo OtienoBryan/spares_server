@@ -11,6 +11,8 @@ import { SubCategory } from '../entities/subcategory.entity';
 import { Staff } from '../entities/staff.entity';
 import { Blog } from '../entities/blog.entity';
 import { VehicleModel } from '../entities/vehicle-model.entity';
+import { VehicleMake } from '../entities/vehicle-make.entity';
+import { VehicleYear } from '../entities/vehicle-year.entity';
 
 @Injectable()
 export class AdminService {
@@ -33,6 +35,10 @@ export class AdminService {
     private blogRepository: Repository<Blog>,
     @InjectRepository(VehicleModel)
     private vehicleModelRepository: Repository<VehicleModel>,
+    @InjectRepository(VehicleMake)
+    private vehicleMakeRepository: Repository<VehicleMake>,
+    @InjectRepository(VehicleYear)
+    private vehicleYearRepository: Repository<VehicleYear>,
   ) {}
 
   // Dashboard statistics
@@ -654,22 +660,83 @@ export class AdminService {
 
   // Vehicle models management
   async getAllVehicleModels() {
-    return this.vehicleModelRepository.find({ order: { name: 'ASC' } });
+    return this.vehicleModelRepository.find({ order: { name: 'ASC' }, relations: ['make'] });
   }
 
-  async createVehicleModel(data: { name: string }) {
-    const model = this.vehicleModelRepository.create({ name: data?.name?.trim() });
-    return this.vehicleModelRepository.save(model);
+  async createVehicleModel(data: { name: string; makeId?: number | null }) {
+    const model = this.vehicleModelRepository.create({
+      name: data?.name?.trim(),
+      makeId: data?.makeId ?? null,
+    });
+    const saved = await this.vehicleModelRepository.save(model);
+    return this.vehicleModelRepository.findOne({ where: { id: saved.id }, relations: ['make'] });
   }
 
-  async updateVehicleModel(id: number, data: { name?: string }) {
+  async updateVehicleModel(id: number, data: { name?: string; makeId?: number | null }) {
     const payload: Partial<VehicleModel> = {};
     if (typeof data?.name === 'string') payload.name = data.name.trim();
+    if (Object.prototype.hasOwnProperty.call(data, 'makeId')) payload.makeId = data.makeId ?? null;
     await this.vehicleModelRepository.update(id, payload);
-    return this.vehicleModelRepository.findOne({ where: { id } });
+    return this.vehicleModelRepository.findOne({ where: { id }, relations: ['make'] });
   }
 
   async deleteVehicleModel(id: number) {
     return this.vehicleModelRepository.delete(id);
+  }
+
+  // Vehicle makes management
+  async getAllVehicleMakes() {
+    return this.vehicleMakeRepository.find({ order: { name: 'ASC' } });
+  }
+
+  async createVehicleMake(data: { name: string; logo?: string | null }) {
+    const make = this.vehicleMakeRepository.create({
+      name: data?.name?.trim(),
+      logo: data?.logo ?? null,
+    });
+    return this.vehicleMakeRepository.save(make);
+  }
+
+  async updateVehicleMake(id: number, data: { name?: string; logo?: string | null }) {
+    const payload: Partial<VehicleMake> = {};
+    if (typeof data?.name === 'string') payload.name = data.name.trim();
+    if (Object.prototype.hasOwnProperty.call(data, 'logo')) payload.logo = data.logo ?? null;
+    await this.vehicleMakeRepository.update(id, payload);
+    return this.vehicleMakeRepository.findOne({ where: { id } });
+  }
+
+  async deleteVehicleMake(id: number) {
+    return this.vehicleMakeRepository.delete(id);
+  }
+
+  // Vehicle years management
+  async getAllVehicleYears() {
+    return this.vehicleYearRepository.find({
+      order: { yearFrom: 'DESC', modelId: 'ASC' },
+      relations: ['model', 'model.make'],
+    });
+  }
+
+  async createVehicleYear(data: { yearFrom: number; yearTo?: number | null; modelId: number }) {
+    const entry = this.vehicleYearRepository.create({
+      yearFrom: data.yearFrom,
+      yearTo: data.yearTo ?? null,
+      modelId: data.modelId,
+    });
+    const saved = await this.vehicleYearRepository.save(entry);
+    return this.vehicleYearRepository.findOne({ where: { id: saved.id }, relations: ['model', 'model.make'] });
+  }
+
+  async updateVehicleYear(id: number, data: { yearFrom?: number; yearTo?: number | null; modelId?: number }) {
+    const payload: Partial<VehicleYear> = {};
+    if (data.yearFrom !== undefined) payload.yearFrom = data.yearFrom;
+    if (Object.prototype.hasOwnProperty.call(data, 'yearTo')) payload.yearTo = data.yearTo ?? null;
+    if (data.modelId !== undefined) payload.modelId = data.modelId;
+    await this.vehicleYearRepository.update(id, payload);
+    return this.vehicleYearRepository.findOne({ where: { id }, relations: ['model', 'model.make'] });
+  }
+
+  async deleteVehicleYear(id: number) {
+    return this.vehicleYearRepository.delete(id);
   }
 }

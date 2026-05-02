@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.VehicleModel = exports.Blog = exports.Staff = exports.Brand = exports.SubCategory = exports.Rider = exports.OrderItem = exports.PaymentStatus = exports.OrderStatus = exports.Order = exports.CartItem = exports.Cart = exports.User = exports.Product = exports.Category = void 0;
+exports.VehicleYear = exports.VehicleMake = exports.VehicleModel = exports.Blog = exports.Staff = exports.Brand = exports.SubCategory = exports.Rider = exports.OrderItem = exports.PaymentStatus = exports.OrderStatus = exports.Order = exports.CartItem = exports.Cart = exports.User = exports.Product = exports.Category = void 0;
 var category_entity_1 = require("./category.entity");
 Object.defineProperty(exports, "Category", { enumerable: true, get: function () { return category_entity_1.Category; } });
 var product_entity_1 = require("./product.entity");
@@ -29,4 +29,8 @@ var blog_entity_1 = require("./blog.entity");
 Object.defineProperty(exports, "Blog", { enumerable: true, get: function () { return blog_entity_1.Blog; } });
 var vehicle_model_entity_1 = require("./vehicle-model.entity");
 Object.defineProperty(exports, "VehicleModel", { enumerable: true, get: function () { return vehicle_model_entity_1.VehicleModel; } });
+var vehicle_make_entity_1 = require("./vehicle-make.entity");
+Object.defineProperty(exports, "VehicleMake", { enumerable: true, get: function () { return vehicle_make_entity_1.VehicleMake; } });
+var vehicle_year_entity_1 = require("./vehicle-year.entity");
+Object.defineProperty(exports, "VehicleYear", { enumerable: true, get: function () { return vehicle_year_entity_1.VehicleYear; } });
 //# sourceMappingURL=index.js.map
